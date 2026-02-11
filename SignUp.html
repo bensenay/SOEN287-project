@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BetterMoodle</title>
+    <link rel="stylesheet" href="signInORsignUp.css">
+</head>
+<body>
+
+<div class="container">
+    <h2>Sign Up</h2>
+
+    <div class="form-group">
+        <label for="FirstName">Email Address</label> <br>
+        <input type="text" id="FirstName" placeholder="Enter your First Name" required>
+    </div>
+
+    <div class="form-group">
+        <label for="UserEmail">Email Address</label> <br>
+        <input type="email" id="UserEmail" placeholder="Enter your Email" required>
+    </div>
+
+    <div class="form-group">
+        <label for="UserPassword">Password</label> <br>
+        <input type="password" id="UserPassword" placeholder="Enter your Password" required>
+    </div>
+
+    <div class="form-group">
+        <div class="radio-group">
+            <label>Are you a:</label> <br>
+            <div class="radio-option">
+                <label for="Student"></label><input type="radio" id="Student" name="TypeOfUser">
+                <span>Student</span>
+            </div>
+            <div class="radio-option">
+                <label for="Admin"></label><input type="radio" id="Admin" name="TypeOfUser">
+                <span>Admin</span>
+            </div>
+        </div>
+
+        <div class ="HyperLink">
+            <a  href="SignIn.html">I already have an account</a>
+        </div>
+
+        <div class="button">
+            <input type="submit" value="Sign up">
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>
