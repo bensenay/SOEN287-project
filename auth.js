@@ -1,0 +1,50 @@
+function signUp(event) {
+    event.preventDefault();
+
+    const form = document.getElementById('signupForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();  // show validation errors
+        return;
+    }
+
+    const firstName = document.getElementById('FirstName').value;
+    const email = document.getElementById('UserEmail').value;
+    const password = document.getElementById('UserPassword').value;
+    const typeOfUser = document.querySelector('input[name="TypeOfUser"]').value;
+
+    // store in local storage (database soon)
+    localStorage.setItem('firstName', firstName);
+    localStorage.setItem('email', email);
+    localStorage.setItem('password', password);
+    localStorage.setItem('typeOfUser', typeOfUser);
+
+    // for debugging purposes
+    console.log('User information stored in local storage:', {
+        firstName: firstName,
+        email: email,
+        password: password,
+        typeOfUser: typeOfUser
+    });
+
+    // redirect to SignIn page
+    window.location.href = 'SignIn.html';
+
+}
+
+function signIn(event) {
+    event.preventDefault();
+
+    const email = document.getElementById('UserEmail').value;
+    const password = document.getElementById('UserPassword').value;
+
+    const storedEmail = localStorage.getItem('email');
+    const storedPassword = localStorage.getItem('password');
+
+    if (email === storedEmail && password === storedPassword) {
+        alert('Sign-in successful!');
+        window.location.href = 'Main.html';
+    }
+    else {
+        alert('Invalid email or password. Please try again.');
+    }
+}
