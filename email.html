@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Academic Advisor</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; }
+    header {
+      background: brown;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      box-sizing: border-box; 
+           
+    }
+    .container {
+      max-width: 700px;
+      margin: 25px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .advisor {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .advisor img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .advisor h2 { margin: 0 0 6px 0; }
+    .advisor p { margin: 4px 0; }
+    
+
+    label { font-weight: bold; display: block; margin: 10px 0 6px; }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    textarea { height: 160px; resize: none; }
+
+    button {
+      margin-top: 15px;
+      background: brown;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { opacity: 0.95; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 style ="padding-left : 10px;"> Email Your Academic Advisor</h1>
+    <div class="email" onclick="window.location.href='studentprofile.html';" style="cursor:pointer;">
+      <h2>Back to Student profile</h2>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="advisor">
+      <img src="https://i.scdn.co/image/ab67616d0000b273ffe8ad517ca19e5e1edf2ff3" alt="Advisor Photo">
+      <div>
+        <h2>John pork</h2>
+        <p><strong>Email:</strong> alex.morgan@university.edu</p>
+      </div>
+    </div>
+
+    <form id="emailForm">
+      <label for="subject">Subject</label>
+      <input id="subject" type="text" placeholder="Enter subject" required>
+
+      <label for="message">Message</label>
+      <textarea id="message" placeholder="Write your message..." required></textarea>
+
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("emailForm");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault(); // stay on this page
+      alert("Email sent with success"); // (spelled as you requested)
+      window.location.href = "studentprofile.html"; // go back
+    });
+  </script>
+</body>
+</html>

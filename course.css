@@ -1,3 +1,4 @@
+
 .header{
     color: white;
     background-color: brown;
@@ -31,10 +32,9 @@
 }
 body{
     margin: 0;
-    font-family: Calibri;
+    font-family: Arial;
 }
-hr{
-}
+
 .course-section h2, .course-section h3{
     font-weight: bolder;
 }

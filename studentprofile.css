@@ -1,0 +1,60 @@
+body {
+    margin: 0;
+    font-family: Arial;
+  }
+  
+  .header {
+    background-color: brown;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;           
+    box-sizing: border-box;
+  }
+
+.personal-info {
+    width: 70%;
+    margin: auto;
+    background-color: white;
+    outline-style: solid;
+    outline-color: lightgray;
+    outline-width: 1px;
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 20px;
+}
+.academic-info {
+    width: 70%;
+    margin: auto;
+    background-color: white;
+    outline-style: solid;
+    outline-color: lightgray;
+    outline-width: 1px;
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 20px;
+}
+.enrollment-info {
+    width: 70%;
+    margin: auto;
+    background-color: white;
+    outline-style: solid;
+    outline-color: lightgray;
+    outline-width: 1px;
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 20px;
+}
+.payment-info {
+    width: 70%;
+    margin: auto;
+    background-color: white;
+    outline-style: solid;
+    outline-color: lightgray;
+    outline-width: 1px;
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 20px;
+}

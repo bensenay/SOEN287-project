@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Profile</title>
+  <link rel="stylesheet" href="studentprofile.css">
+</head>
+<body>
+
+  <div class="header">
+    <h1 style="padding-left:10px;">Student Profile</h1>
+    <div class="profile" onclick="window.location.href='Main.html';" style="cursor:pointer;">
+      <h2>Back to Student Hub</h2>
+    </div>
+  </div>
+
+  <div class="personal-info">
+    <section id="personal-info">
+      <h2>Personal Information</h2>
+      <p><strong>Full Name:</strong></p>
+      <p><strong>Student ID:</strong></p>
+      <p><strong>Address:</strong></p>
+      <p><strong>Email Address:</strong></p>
+      <p><strong>Student photo:</strong></p>
+      <img src="https://i.scdn.co/image/ab67616d0000b273ffe8ad517ca19e5e1edf2ff3" alt="Student Photo" class="student-photo">
+    </section>
+  </div>
+
+  <div class="academic-info">
+    <section id="academic-info">
+      <h2>Academic Information</h2>
+      <p><strong>GPA:</strong></p>
+      <p><strong>Program Enrolled:</strong></p>
+      <p><strong>Academic Advisor:</strong> John. pork</p>
+
+      <div class="contact-advisor" onclick="window.location.href='email.html';" style="cursor:pointer;">
+        <p>Contact Advisor</p>
+      </div>
+
+      <p><strong>Semester:</strong> Winter 2026</p>
+      <p><strong>Courses Enrolled:</strong> SOEN287, SOEN341, SOEN287</p>
+
+      <div class="schedule" onclick="window.location.href='schedule.html';" style="cursor:pointer;">
+        <p>View my weekly schedule</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="enrollment-info">
+    <section id="enrollment-info">
+      <h2>Enrollment Information</h2>
+      <p><strong>Enrollment Status:</strong> Fulltime/part time/dropped out</p>
+      <p><strong>Enrollment Date:</strong> xxx yy, zzzz</p>
+      <p><strong>Expected Graduation Date:</strong> xxx yy, zzzz</p>
+
+      <div class="add-class" onclick="window.location.href='addclass.html';" style="cursor:pointer;">
+        <p><strong>Enrollment: add a class</strong></p>
+      </div>
+
+      <div class="drop-class" onclick="window.location.href='dropclass.html';" style="cursor:pointer;">
+        <p><strong>Enrollment: Drop a class</strong></p>
+      </div>
+
+      <div class="schedule" onclick="window.location.href='schedule.html';" style="cursor:pointer;">
+        <p><strong>View my weekly schedule</strong></p>
+      </div>
+    </section>
+  </div>
+
+  <div class="payment-info">
+    <section id="payment-info">
+      <h2>Payment Information</h2>
+      <p><strong>Payments Due:</strong> $</p>
+      <p><strong>Payment Due date:</strong> xxx yy, zzzz</p>
+
+      <div class="make-payment" onclick="window.location.href='payment.html';" style="cursor:pointer;">
+        <p>Make a payment</p>
+      </div>
+    </section>
+  </div>
+
+</body>
+</html>
