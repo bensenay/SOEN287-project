@@ -1,10 +1,10 @@
 body {
     margin: 0;
-    font-family: Arial;
+    font-family: "Gill Sans MT Ext Condensed Bold", "Calibri", "Trebuchet MS", sans-serif;
   }
   
   .header {
-    background-color: brown;
+    background-color: #912338;
     color: white;
     padding: 10px;
     display: flex;
@@ -57,4 +57,12 @@ body {
     border-radius: 10px;
     margin-top: 30px;
     padding: 20px;
+}
+a{
+    color: white;
+    text-decoration: none;
+}
+a p{
+    color: black;
+    font-weight: bold;
 }

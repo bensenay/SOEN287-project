@@ -3,11 +3,11 @@ body{
     background-color: #dcd6cc;
     padding: 100px;
     text-align: center;
-    font-family: calibri, sans-serif;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 h1{
     font-size: 50px;
-    color: brown;
+    color: #912338;
     text-shadow: #203343 1px 1px 1px;
 }
 h2{
@@ -38,7 +38,7 @@ input {
 }
 .button button{
     color: white;
-    background-color: brown;
+    background-color: #912338;
     padding: 7px;
     width: 75%;
     border-radius: 5px;

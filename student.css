@@ -1,6 +1,6 @@
 .header{
     color: white;
-    background-color: brown;
+    background-color: #912338;
     padding: 10px;
     display: flex;
     justify-content: space-between;
@@ -53,8 +53,16 @@
 }
 body{
     margin: 0;
-    font-family: Arial;
+    font-family: "Gill Sans MT Ext Condensed Bold", Calibri, "Trebuchet MS", sans-serif;
 }
 hr{
     width: 90%;
+}
+a{
+    color: white;
+    text-decoration: none;
+}
+a p{
+    color: black;
+    font-weight: bold;
 }

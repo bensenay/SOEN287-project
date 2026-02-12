@@ -52,7 +52,7 @@ function signIn(event) {
         if(storedType === "Admin"){
             window.location.href = 'Admin.html';
         } else if (storedType === "Student"){
-            window.location.href = 'Main.html';
+            window.location.href = 'student.html';
         } else{
             window.location.href = 'Login.html';
         }
