@@ -1,9 +1,28 @@
-.header{
+.header {
     color: white;
     background-color: #912338;
-    padding: 10px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    }
+
+.welcome {
+    font-size: 3em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.profile {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.profile:hover {
+    color: rgb(204, 204, 204)
 }
 .course-overview{
     width: 70%;
@@ -62,6 +81,7 @@ a{
     color: white;
     text-decoration: none;
     }
+    
 a p{
     color: #912338;
     font-weight: bold;

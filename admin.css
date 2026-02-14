@@ -1,0 +1,90 @@
+body {
+    margin: 0;
+    font-family: "Gill Sans MT Ext Condensed Bold", "Calibri", "Trebuchet MS", sans-serif;
+    
+    align-items: center;
+}
+
+.header {
+    color: white;
+    background-color: #912338;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+h2 {
+    font-size: 4em;
+    font-weight: bold;
+}
+
+.coursemanagement {
+    width: 70%;
+    margin: auto;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+a p {
+    color: #912338;
+    font-weight: bold;
+}
+
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    width: 70%;
+    margin: auto;
+}
+
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+
+.tab button:hover {
+    background-color: #ddd;
+}
+
+.tab button.active {
+    background-color: #ccc;
+}
+
+.tabcontent {
+    font-size: 2em;
+    display: none;
+    margin:auto;
+    width: 70%;
+    border: 1px solid #ccc;
+    border-top: none;
+    box-sizing: border-box;
+    padding: 20px;
+    padding-top: 5px;
+}
+
+.admindash {
+    font-size: 3em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.logout {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.logout:hover {
+    color: rgb(204, 204, 204)
+}

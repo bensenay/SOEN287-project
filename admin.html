@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <link rel="stylesheet" href="admin.css">
+    <script src="adminManageCourses.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1 class="admindash">Admin Dashboard</h1>
+        <a href="signin.html">
+            <h1 class="logout">Log Out</h1>
+        </a>
+    </div>
+
+    <div class="admin-options">
+        <section class="coursemanagement">
+            <h2> Manage Courses</h2>
+        </section>
+    </div>
+
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'create')">Create</button>
+        <button class="tablinks" onclick="openTab(event, 'remove')">Remove</button>
+        <button class="tablinks" onclick="openTab(event, 'restrict')">Restrict</button>
+    </div>
+    
+    <div id="create" class="tabcontent">
+        <h3>Create Course</h3>
+        <p>Here you can create a new course.</p>
+    </div>
+
+    <div id="remove" class="tabcontent">
+        <h3>Remove Course</h3>
+        <p>Here you can remove an existing course.</p>
+    </div>
+
+    <div id="restrict" class="tabcontent">
+        <h3>Restrict Course</h3>
+        <p>Here you can enable and disable courses.</p>
+    </div>
+
+</body>
+</html>

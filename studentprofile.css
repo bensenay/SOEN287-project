@@ -4,15 +4,32 @@ body {
   }
   
   .header {
-    background-color: #912338;
     color: white;
-    padding: 10px;
+    background-color: #912338;
     display: flex;
     justify-content: space-between;
-    width: 100%;
-    margin: 0;           
-    box-sizing: border-box;
-  }
+    align-items: center;
+    padding: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+}
+
+.stuprofile {
+    font-size: 3em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.backhub {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.backhub:hover {
+    color: rgb(204, 204, 204)
+}
 
 .personal-info {
     width: 70%;
@@ -66,4 +83,23 @@ a{
 a p{
     color: #912338;
     font-weight: bold;
+}
+
+.button {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+}
+.button button:hover{
+    background-color: #872424;
+}
+.button button{
+    color: white;
+    background-color: #912338;
+    padding: 7px;
+    width: 10%;
+    border-radius: 5px;
 }
