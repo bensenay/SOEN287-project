@@ -40,6 +40,27 @@
     <div id="restrict" class="tabcontent">
         <h3>Restrict Course</h3>
         <p>Here you can enable and disable courses.</p>
+        <form id="courseRestrictions">
+            <label>Select Course:</label>
+            <select id="courseSelect" name="courseSelect">
+                <option value="course1">Course #1</option>
+                <option value="course2">Course #2</option>
+                <option value="course3">Course #3</option>
+                <option value="course4">Course #4</option>
+            </select>
+
+            <div class="restriction-options">
+                <input type="radio" id="enable" name="restriction" value="enable" required>
+                <label for="enable">Enable</label>
+
+                <input type="radio" id="disable" name="restriction" value="disable" required>
+                <label for="disable">Disable</label>
+            </div>
+
+            <div class="button">
+                <button type="submit" onclick="applyRestriction(event)">Apply</button>
+            </div>
+        </form>
     </div>
 
 </body>
