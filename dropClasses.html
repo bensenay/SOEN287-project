@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BetterMoodle</title>
+    <link rel="stylesheet" href="signInORsignUp.css">
+    <script src="manageClasses.js"></script>
+</head>
+
+<body>
+<div class="container">
+    <h1>Drop Class</h1>
+
+    <div class="form-group">
+        <label for="classCode">Class Code:</label> <br>
+        <input type="text" id="classCode" placeholder="Class code">
+    </div>
+
+    <div class="button">
+        <button type="button" onclick="removeCourse(document.getElementById('classCode').value)">Confirm</button>
+    </div>
+
+</div>
+
+</body>
+</html>

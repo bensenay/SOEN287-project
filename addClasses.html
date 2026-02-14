@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BetterMoodle</title>
+    <link rel="stylesheet" href="signInORsignUp.css">
+    <script src="manageClasses.js"></script>
+</head>
+
+<body>
+<div class="container">
+    <h1>Add Class</h1>
+
+    <div class="form-group" style="display: flex; flex-direction: column;align-items: center;">
+        <label for="classCode">Class Code:</label> <br>
+        <input type="text" id="classCode" placeholder="Class code">
+
+        <label for="classCode">Class Name:</label> <br>
+        <input type="text" id="className" placeholder="Class name">
+
+        <label for="classCode">Class Instructor:</label> <br>
+        <input type="text" id="classInstructor" placeholder="Instructor name">
+
+        <label for="classCode">Term:</label> <br>
+        <input type="text" id="term" placeholder="Term">
+    </div>
+
+    <div class="button">
+        <button type="button" onclick="addCourses(document.getElementById('classCode').value)">Confirm</button>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Email Academic Advisor</title>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; }
+    body { margin: 0; font-family: "Gill Sans MT Ext Condensed Bold", Calibri, "Trebuchet MS", sans-serif; background: #f4f4f4; }
     header {
-      background: brown;
+      background: #912338;
       color: white;
       padding: 10px;
       width: 100%;
@@ -52,7 +52,7 @@
 
     button {
       margin-top: 15px;
-      background: brown;
+      background: #912338;
       color: white;
       border: none;
       padding: 10px 14px;
@@ -61,14 +61,22 @@
       cursor: pointer;
     }
     button:hover { opacity: 0.95; }
+    a{
+      color: white;
+      text-decoration: none;
+    }
+    a p{
+      color: black;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <header>
     <h1 style ="padding-left : 10px;"> Email Your Academic Advisor</h1>
-    <div class="email" onclick="window.location.href='studentprofile.html';" style="cursor:pointer;">
-      <h2>Back to Student profile</h2>
-    </div>
+    <a href="studentprofile.html">
+      <h1>Back to Student profile</h1>
+    </a>
   </header>
 
   <div class="container">

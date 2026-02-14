@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Profile</title>
   <link rel="stylesheet" href="studentprofile.css">
+  <script src="manageClasses.js"></script>
 </head>
 <body>
 
@@ -18,11 +19,21 @@
   <div class="personal-info">
     <section id="personal-info">
       <h2>Personal Information</h2>
-      <p><strong>Full Name:</strong></p>
-      <p><strong>Student ID:</strong></p>
-      <p><strong>Address:</strong></p>
-      <p><strong>Email Address:</strong></p>
-      <p><strong>Student photo:</strong></p>
+      <p>
+        <strong>Full Name: </strong>
+        <span id="full-name">John Pork</span>
+      </p>
+      <p>
+        <strong>Student ID:</strong>
+        <span id="student-id">12345678</span>
+      </p>
+      <p>
+        <strong>Email Address:</strong>
+        <span id="email">john.pork@concordia.ca</span>
+      </p>
+      <p>
+        <strong>Student photo:</strong>
+      </p>
       <img src="https://i.scdn.co/image/ab67616d0000b273ffe8ad517ca19e5e1edf2ff3" alt="Student Photo" class="student-photo">
     </section>
   </div>
@@ -30,16 +41,31 @@
   <div class="academic-info">
     <section id="academic-info">
       <h2>Academic Information</h2>
-      <p><strong>GPA:</strong></p>
-      <p><strong>Program Enrolled:</strong></p>
-      <p><strong>Academic Advisor:</strong> John. pork</p>
+      <p>
+        <strong>GPA:</strong>
+        <span id="gpa">4.3</span>
+      </p>
+      <p>
+        <strong>Program Enrolled:</strong>
+        <span id="program-enrolled">Software Engineering</span>
+      </p>
+      <p>
+        <strong>Academic Advisor:</strong>
+        <span id="academic-advisor">John Pork Sr.</span>
+      </p>
 
       <a class="contact-advisor" href="email.html">
         <p>Contact Advisor</p>
       </a>
 
-      <p><strong>Semester:</strong> Winter 2026</p>
-      <p><strong>Courses Enrolled:</strong> SOEN287, SOEN341, SOEN287</p>
+      <p>
+        <strong>Semester:</strong>
+        <span id="semester">Winter 2026</span>
+      </p>
+      <p>
+        <strong>Courses Enrolled:</strong>
+        <span id="courses-enrolled"><script>displayCourses()</script></span>
+      </p>
 
       <a href="schedule.html">
         <p><strong>View my weekly schedule</strong></p>
@@ -50,17 +76,30 @@
   <div class="enrollment-info">
     <section id="enrollment-info">
       <h2>Enrollment Information</h2>
-      <p><strong>Enrollment Status:</strong> Full time/part time/dropped out</p>
-      <p><strong>Enrollment Date:</strong> xxx yy, zzzz</p>
-      <p><strong>Expected Graduation Date:</strong> xxx yy, zzzz</p>
+      <p>
+        <strong>Enrollment Status:</strong>
+        <span id="enrollment-status">Full time</span> <!-- full-time/part-time/dropped-out -->
+      </p>
+      <p>
+        <strong>Enrollment Date:</strong>
+        <span id="enrollment-date">xx/yy/zzzz</span>
+      </p>
+      <p>
+        <strong>Expected Graduation Date:</strong>
+        <span id="grad-date">xx/yy/zzzz</span>
+      </p>
 
-      <a href="addclass.html">
+      <a href="addClasses.html">
         <p><strong>Enrollment: Add class</strong></p>
       </a>
 
-      <a href="dropclass.html">
+      <a href="dropClasses.html">
         <p><strong>Enrollment: Drop class</strong></p>
       </a>
+
+      <button onclick="resetCourses()">
+          <strong>Reset classes</strong>
+      </button>
 
     </section>
   </div>
@@ -68,8 +107,14 @@
   <div class="payment-info">
     <section id="payment-info">
       <h2>Payment Information</h2>
-      <p>Payments Due: $</p>
-      <p>Payment Due date: xxx yy, zzzz</p>
+      <p>
+        <strong>Payments Due: </strong>
+        <span id="payment-due"></span>$
+      </p>
+      <p>
+        <strong>Payment Due date:</strong>
+        <span id="payment-date">xx/yy/zzzz</span>
+      </p>
 
       <a href="payment.html">
         <p><strong>Make a payment</strong></p>
