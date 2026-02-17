@@ -1,0 +1,100 @@
+/* schedule.css */
+
+* { box-sizing: border-box; }
+
+body{
+  margin: 0;
+  font-family: "Gill Sans MT Ext Condensed Bold", "Calibri", "Trebuchet MS", sans-serif;
+  background: #ffffff;
+  color: #111;
+}
+
+header{
+  background: #912338;;           
+  color: white;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+header h1{
+  margin: 0;
+  font-size: 28px;
+}
+
+.header-actions{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn{
+  background: white;
+  color: #6b2d1a;
+  border: 2px solid white;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn:hover{
+  background: #f3f3f3;
+}
+
+main{
+  padding: 18px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* table */
+table{
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* keeps columns clean */
+}
+
+th, td{
+  border: 1px solid #dcdcdc;
+  padding: 10px;
+  height: 54px;         /* consistent row height */
+  vertical-align: top;
+}
+
+thead th{
+  background: #f6f6f6;
+  font-weight: 700;
+  text-align: center;
+}
+
+.time-col{
+  width: 140px;
+  background: #fafafa;
+  font-weight: 700;
+  text-align: left;
+}
+
+/* zebra rows (optional) */
+tbody tr:nth-child(even) td{
+  background: #fbfbfb;
+}
+
+/* class blocks */
+.class-block{
+  background: #ead7cf;      /* light brown tint */
+  border: 1px solid #caa99b;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.class-title{
+  font-weight: 800;
+  margin-bottom: 4px;
+}
