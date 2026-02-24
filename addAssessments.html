@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BetterMoodle</title>
+    <link rel="stylesheet" href="signInORsignUp.css">
+    <script src="manageClasses.js"></script>
+</head>
+
+<body>
+<div class="container">
+    <h1>Add Assessment</h1>
+
+    <div class="form-group" style="display: flex; flex-direction: column;align-items: center;">
+
+        <div class="radio-group">
+            <p style="text-align: left;">Assessment type:</p>
+            <div class="radio-option">
+                <input type="radio" id="assignment" name="typeOfAssessment" value="Assignment" required>
+                <label for="assignment">Assignment</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="exam"  name="typeOfAssessment" value="Exam" required>
+                <label for="exam">Exam</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="quiz" name="typeOfAssessment" value="Quiz" required>
+                <label for="quiz">Quiz</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="lab"  name="typeOfAssessment" value="Lab" required>
+                <label for="lab">Lab</label>
+            </div>
+        </div>
+
+        <label for="assessmentName">Assessment name:</label> <br>
+        <input type="text" id="assessmentName" placeholder="Assessment name">
+
+        <label for="dueDate">Class Instructor:</label> <br>
+        <input type="date" id="dueDate" placeholder="dd/mm/yyyy">
+
+        <label for="assessmentDescription">Description:</label> <br>
+        <textarea id="assessmentDescription" placeholder="Enter a description..."></textarea>
+    </div>
+
+    <div class="button">
+
+        <button type="button" onclick="addAssessment(document.querySelector('input[name=\'typeOfAssessment\']:checked').value, document.getElementById('assessmentName').value, document.getElementById('dueDate').value, document.getElementById('assessmentDescription').value)">Confirm</button>
+    </div>
+
+</div>
+</body>
+</html>

@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="header">
-    <h1>Introduction to Web Programming</h1>
+    <h1 id="classHeader">Introduction to Web Programming</h1>
     <a href="student.html">
         <h1>Go back</h1>
     </a>
@@ -19,39 +19,42 @@
     <div class="course-section">
         <h2>General Information</h2>
         <hr>
-        <h3>Course code: </h3>
-        <h3>Professor: </h3>
-        <h3>Lecture times: </h3>
-        <h3>Office Hours:</h3>
+        <h3>Course code: <span id="course-code"></span></h3>
+        <h3>Professor: <span id="professor"></span></h3>
+        <a href="addAssessments.html"><h3>+ Add Assessment +</h3></a>
+        <button onclick="resetAssessments()">Reset Assessments</button>
     </div>
-    <div class="course-section">
+    <div class="course-section" id="assessment-grid">
         <h2>Assignments</h2>
         <hr>
-        <div class="handout">
+        <div id="assignment-section" class="handout">
             <div>
                 <h3>Assignment</h3>
                 <p>Date: Feb 67th</p>
+                <p>lorem ipsum</p>
             </div>
-            <h3>100/100</h3>
         </div>
     </div>
     <div class="course-section">
         <h2>Exams</h2>
         <hr>
+        <div id="exam-section">
+
+        </div>
     </div>
     <div class="course-section">
         <h2>Quizzes</h2>
         <hr>
+        <div id="quiz-section">
+
+        </div>
     </div>
     <div class="course-section">
         <h2>Labs</h2>
         <hr>
-    </div>
-    <div class="course-section">
-        <h2>Grades</h2>
-        <hr>
+        <div id="lab-section"></div>
     </div>
 </div>
-
+<script src="manageClasses.js"></script>
 </body>
 </html>
