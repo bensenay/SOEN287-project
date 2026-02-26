@@ -18,6 +18,12 @@
         </div>
 
         <div class="form-group">
+            <label for="LastName">Last Name</label> <br>
+            <input type="text" id="LastName" placeholder="Enter your Last Name" pattern="[A-Za-z]+"
+                   title="Only alphabetic characters are allowed (A-Z, a-z)" required>
+        </div>
+
+        <div class="form-group">
             <label for="UserEmail">Email Address</label> <br>
             <input type="email" id="UserEmail" placeholder="Enter your Email" required>
         </div>
@@ -28,8 +34,8 @@
         </div>
 
         <div class="form-group">
-            <div class="radio-group">
-                <p style="text-align: left;">I am a:</p> <br>
+            <fieldset class="radio-group">
+                <legend>I am a:</legend>
                 <div class="radio-option">
                     <input type="radio" id="Student" name="TypeOfUser" value="Student" required>
                     <label for="Student">Student</label>
@@ -38,15 +44,15 @@
                     <input type="radio" id="Admin" name="TypeOfUser" value="Admin" required>
                     <label for="Admin">Admin</label>
                 </div>
-            </div>
+            </fieldset>
+        </div>
 
-            <div class ="HyperLink">
-                <a href="SignIn.html">I already have an account</a>
-            </div>
+        <div class="HyperLink">
+            <a href="SignIn.html">I already have an account</a>
+        </div>
 
-            <div class="button">
-                <button type="submit" onclick="signUp(event)">Sign Up</button>
-            </div>
+        <div class="button">
+            <button type="submit" onclick="signUp(event)">Sign Up</button>
         </div>
     </div>
 </form>

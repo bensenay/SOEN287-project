@@ -5,63 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Page</title>
     <link rel="stylesheet" href="admin.css">
-    <script src="adminManageCourses.js"></script>
 </head>
 <body>
-    <div class="header">
-        <h1 class="admindash">Admin Dashboard</h1>
-        <a href="signin.html">
-            <h1 class="logout">Log Out</h1>
-        </a>
+<div class="header">
+    <h1 class="admindash">Admin Dashboard</h1>
+    <a href="SignIn.html">
+        <h1 class="logout">Log Out</h1>
+    </a>
+</div>
+
+<div class="admin-options">
+    <section class="coursemanagement">
+        <h2> Manage Courses</h2>
+    </section>
+</div>
+
+<div class="tab">
+    <button class="tablinks" data-tab="create">Create</button>
+    <button class="tablinks" data-tab="remove">Remove</button>
+    <button class="tablinks" data-tab="restrict">Enable/Disable</button>
+</div>
+
+<div id="create" class="tabcontent">
+    <h3>Create Course</h3>
+    <p>Here you can create a new course.</p>
+
+    <div class="form-group">
+        <label for="classCode">Class Code:</label> <br>
+        <input type="text" id="classCode" placeholder="Create your Class Code"> <br>
+    </div>
+    <div class="form-group">
+        <label for="className">Class Name:</label> <br>
+        <input type="text" id="className" placeholder="Class name"> <br>
+    </div>
+    <div class="form-group">
+        <label for="term">Term:</label> <br>
+        <input type="text" id="term" placeholder="Term"> <br>
     </div>
 
-    <div class="admin-options">
-        <section class="coursemanagement">
-            <h2> Manage Courses</h2>
-        </section>
+    <div class="button">
+        <button type="submit" onclick="createCourse()">Create Course</button>
     </div>
+</div>
 
-    <div class="tab">
-        <button class="tablinks" onclick="openTab(event, 'create')">Create</button>
-        <button class="tablinks" onclick="openTab(event, 'remove')">Remove</button>
-        <button class="tablinks" onclick="openTab(event, 'restrict')">Restrict</button>
-    </div>
-    
-    <div id="create" class="tabcontent">
-        <h3>Create Course</h3>
-        <p>Here you can create a new course.</p>
-    </div>
+<div id="remove" class="tabcontent">
+    <h3>Remove Course</h3>
+    <p>Here you can remove an existing course.</p>
+</div>
 
-    <div id="remove" class="tabcontent">
-        <h3>Remove Course</h3>
-        <p>Here you can remove an existing course.</p>
-    </div>
+<div id="restrict" class="tabcontent">
+    <h3>Enable/Disable Course</h3>
+    <p>Here you can enable and disable courses.</p>
+    <form id="courseRestrictions">
+        <label for="courseSelect">Select Course:</label>
+        <select id="courseSelect" name="courseSelect">
+            <option value="course1">Course #1</option>
+            <option value="course2">Course #2</option>
+            <option value="course3">Course #3</option>
+            <option value="course4">Course #4</option>
+        </select>
 
-    <div id="restrict" class="tabcontent">
-        <h3>Restrict Course</h3>
-        <p>Here you can enable and disable courses.</p>
-        <form id="courseRestrictions">
-            <label>Select Course:</label>
-            <select id="courseSelect" name="courseSelect">
-                <option value="course1">Course #1</option>
-                <option value="course2">Course #2</option>
-                <option value="course3">Course #3</option>
-                <option value="course4">Course #4</option>
-            </select>
+        <div class="restriction-options">
+            <input type="radio" id="enable" name="restriction" value="enable" required>
+            <label for="enable">Enable</label>
 
-            <div class="restriction-options">
-                <input type="radio" id="enable" name="restriction" value="enable" required>
-                <label for="enable">Enable</label>
+            <input type="radio" id="disable" name="restriction" value="disable" required>
+            <label for="disable">Disable</label>
+        </div>
 
-                <input type="radio" id="disable" name="restriction" value="disable" required>
-                <label for="disable">Disable</label>
-            </div>
-
-            <div class="button">
-                <button type="submit" onclick="applyRestriction(event)">Apply</button>
-            </div>
-        </form>
-    </div>
-
+        <div class="button">
+            <button type="submit" onclick="applyRestriction(event)">Apply</button>
+        </div>
+    </form>
+</div>
+<script src="adminManageCourses.js"></script>
 </body>
 </html>

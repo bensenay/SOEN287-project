@@ -1,18 +1,23 @@
 function openTab(evt, tabName) {
-    var i, tabcontent, tablinks;
+    let tabcontent = document.getElementsByClassName("tabcontent");
+    let tablinks = document.getElementsByClassName("tablinks");
 
-    tabcontent = document.getElementsByClassName("tabcontent");
-
-    for (i = 0; i < tabcontent.length; i++) {
+    for (let i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
     }
 
-    tablinks = document.getElementsByClassName("tablinks");
-
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].classList.remove("active");
     }
 
     document.getElementById(tabName).style.display = "block";
-    evt.currentTarget.className += " active";
-}    
+    evt.currentTarget.classList.add("active");
+}
+
+// Attach listeners
+document.querySelectorAll(".tablinks").forEach(button => {
+    button.addEventListener("click", function (event) {
+        const tabName = this.dataset.tab;
+        openTab(event, tabName);
+    });
+});

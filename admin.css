@@ -71,6 +71,10 @@ a p {
     padding: 20px;
 }
 
+.form-group{
+    margin-bottom: 10px;
+}
+
 select {
     width: 100px;
     margin-bottom: 10px;
@@ -104,6 +108,6 @@ select {
     color: white;
     background-color: #912338;
     padding: 7px;
-    width: 35%;
+    width: 20%;
     border-radius: 5px;
 }
