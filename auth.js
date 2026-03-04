@@ -61,3 +61,6 @@ function signIn(event) {
         alert('Invalid email or password. Please try again.');
     }
 }
+
+document.getElementById('email').innerHTML = localStorage.getItem('email');
+document.getElementById('full-name').innerHTML = localStorage.getItem('firstName');

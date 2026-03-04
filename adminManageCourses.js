@@ -21,3 +21,4 @@ document.querySelectorAll(".tablinks").forEach(button => {
         openTab(event, tabName);
     });
 });
+

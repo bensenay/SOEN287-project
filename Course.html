@@ -21,18 +21,20 @@
         <hr>
         <h3>Course code: <span id="course-code"></span></h3>
         <h3>Professor: <span id="professor"></span></h3>
-        <a href="addAssessments.html"><h3>+ Add Assessment +</h3></a>
+        <a id="add-assessment-link" href="#"><h3>+ Add Assessment +</h3></a>
+        <script>
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentId = urlParams.get("id");
+            const addBtn = document.getElementById("add-assessment-link");
+            addBtn.href= `addAssessments.html?id=${currentId}`;
+        </script>
         <button onclick="resetAssessments()">Reset Assessments</button>
     </div>
     <div class="course-section" id="assessment-grid">
         <h2>Assignments</h2>
         <hr>
-        <div id="assignment-section" class="handout">
-            <div>
-                <h3>Assignment</h3>
-                <p>Date: Feb 67th</p>
-                <p>lorem ipsum</p>
-            </div>
+        <div id="assignment-section" >
+
         </div>
     </div>
     <div class="course-section">

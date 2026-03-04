@@ -44,7 +44,7 @@
     </div>
 
     <div class="button">
-        <button type="submit" onclick="createCourse()">Create Course</button>
+        <button type="submit" onclick="createCourse(document.getElementById('classCode').value, document.getElementById('className').value, document.getElementById('term').value)">Create Course</button>
     </div>
 </div>
 
@@ -79,5 +79,6 @@
     </form>
 </div>
 <script src="adminManageCourses.js"></script>
+<script src="manageClasses.js"></script>
 </body>
 </html>
