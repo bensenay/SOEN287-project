@@ -57,3 +57,17 @@ button{
     color: white;
     background-color: #912338;
 }
+.graph-container{
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height:150px;
+    padding: 10px;
+    border: 1px solid #912338;
+}
+.bar{
+    width: 40px;
+    background-color: #912338;
+    color: white;
+    text-align: center;
+}

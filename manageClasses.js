@@ -172,7 +172,7 @@ function addAssessment(type, name, dueDate, description){
         name: name,
         dueDate : dueDate,
         description : description,
-        grade : 100,
+        grade : Math.round(100*Math.random()),
         completed :false
     };
     globalAsssessments.push(assessment);
@@ -272,6 +272,31 @@ function avgGrade(){
         }
     })
 }
+function updateGraph(){
+    const graphContainer = document.getElementById("assessment-graph");
+    const assessmentTypes = ["Assignment", "Exam", "Quiz", "Lab"];
+    const courseId = new URLSearchParams(window.location.search).get("id");
+    enrolledCourses.forEach(course => {
+        if(course.id === courseId) {
+            assessmentTypes.forEach(assessmentType => {
+                const scores = course.assessments.filter(assessment => assessment.type === assessmentType).map(assessment => assessment.grade);
+                const avg = scores.length > 0? scores.reduce((a, b) => a + b/scores.length) : 0;
+                const bar = `
+                    <div style="display:flex;flex-direction:column;align-items: center;justify-content:flex-end;height: 100%">
+                        <div class="bar" style="height: ${avg}%">
+                            ${avg > 0? `${Math.round(avg)}%` : ""}
+                        </div>
+                        <span>${assessmentType}</span>
+                    </div>
+                `;
+                graphContainer.innerHTML += bar;
+            })
+        }
+    })
+
+
+}
+
 window.addEventListener("load",()=>{
     if (document.getElementById("course-grid")) {
         displayCoursesInCourseGrid();
@@ -293,5 +318,8 @@ window.addEventListener("load",()=>{
     }
     if(document.getElementById("assessment-dashboard")) {
         displayAssessmentsInDashboard();
+    }
+    if(document.getElementById("assessment-graph")) {
+        updateGraph();
     }
 })
