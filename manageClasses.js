@@ -1,7 +1,11 @@
 let enrolledCoursesData = localStorage.getItem("enrolledCourses");
 let enrolledCourses = JSON.parse(enrolledCoursesData) || [];
+
 let availableCoursesData = localStorage.getItem("availableCourses");
 let availableCourses = JSON.parse(availableCoursesData) || [];
+
+let globalAssessmentsData = localStorage.getItem("assessments");
+let globalAsssessments = JSON.parse(globalAssessmentsData) || [];
 
 //for admin
 function createCourse(courseCode, courseName, termDate) {
@@ -16,8 +20,16 @@ function createCourse(courseCode, courseName, termDate) {
     localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
     alert(`Course ${courseName} Created Successfully!`);
 }
+function deleteCourse(courseCode) {
+    availableCourses.forEach(course => {
+        if(course.code === courseCode){
+            enrolledCourses.splice(enrolledCourses.indexOf(course), 1);
+            localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
+        }
+    })
+}
 
-function displayCoursesToEnroll(){
+function displayAvailableCourses(){
     const classSection = document.getElementById("courses-section");
 
     availableCourses.forEach(course => {
@@ -32,15 +44,37 @@ function displayCoursesToEnroll(){
         }
     })
 }
+function displayEnrolledCourses() {
+
+    enrolledCourses.forEach(course => {
+        const enrolledCourse = `
+            <div>
+                <p><span>${course.code}</span> : ${course.name}</p>
+                <hr>
+            </div>
+            `
+        document.getElementById('droppable-courses-section').innerHTML += enrolledCourse;
+    })
+}
 function enrollInCourse(courseCode){
     availableCourses.forEach(course => {
-        if(course.code === courseCode){
+        if(course.code === courseCode && !enrolledCourses.some(e => e.id === course.id)) {
 
             enrolledCourses.push(course);
             localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
         }
     })
-    window.location.reload();
+    window.location.href = "studentprofile.html";
+}
+function unenrollFromCourse(courseCode){
+    event.preventDefault();
+    enrolledCourses.forEach(course => {
+        if(course.code === courseCode){
+            enrolledCourses.splice(enrolledCourses.indexOf(course), 1);
+            localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
+        }
+    })
+    window.location.href = "studentprofile.html";
 }
 
 //for student profile to display enrolled classes
@@ -71,9 +105,27 @@ function displayCoursesInCourseGrid(){
         courseGrid.innerHTML += courseBox;
     })
 }
+
+function displayAssessmentsInDashboard(){
+        globalAsssessments.forEach(assessment => {
+            const assessmentBox = `
+                <div class="handout">
+                    <div>
+                        <h3>${assessment.name}</h3>
+                        <p>Date: ${assessment.dueDate}</p>
+                        <p>${assessment.description}</p>
+                        <p>${assessment.completed? 'Complete!' : 'Pending...'}</p>
+                    </div>
+                    <div style="display: flex;flex-direction: column;gap: 20px">
+                        <h3 style="text-align: center"><span id="assessment-grade">${assessment.grade}</span> / 100</h3>
+                    </div>
+                </div>`;
+            document.getElementById('assessment-dashboard').innerHTML += assessmentBox ;
+    })
+}
 function displayAssessments(){
         const courseId = new URLSearchParams(window.location.search).get("id");
-        const currentCourse = availableCourses.find((course) => course.id === courseId);
+        const currentCourse = enrolledCourses.find((course) => course.id === courseId);
         if (!currentCourse || !currentCourse.assessments) {
             console.log("No assessments found for this course.");
             return;
@@ -87,11 +139,13 @@ function displayAssessments(){
                         <h3>${assessment.name}</h3>
                         <p>Date: ${assessment.dueDate}</p>
                         <p>${assessment.description}</p>
+                        <p>${assessment.completed? 'Complete!' : 'Pending...'}</p>
                     </div>
                     <div style="display: flex;flex-direction: column;gap: 20px">
-                        <h3> / 100</h3>
+                        <h3 style="text-align: center"><span id="assessment-grade">${assessment.grade}</span> / 100</h3>
                         <button>Edit grade</button>
-                        <button onclick="removeAssessment('${assessment.name}')">Remove Assessment</button>
+                        <button onclick="removeAssessment('${assessment.id}')">Remove Assessment</button>
+                        <button id='assessmentStatus' onclick="completeAssessment('${assessment.id}')">Mark as Done/Unfinished</button>
                     </div>
                 </div>`;
             switch (assessment.type) {
@@ -118,53 +172,78 @@ function addAssessment(type, name, dueDate, description){
         name: name,
         dueDate : dueDate,
         description : description,
-        grade : 0
+        grade : 100,
+        completed :false
     };
+    globalAsssessments.push(assessment);
+    localStorage.setItem("assessments", JSON.stringify(globalAsssessments));
+
     const urlParams = new URLSearchParams(window.location.search);
     const courseId = urlParams.get("id");
-    let allCourses = enrolledCourses
-    allCourses = allCourses.map(course => {
+    enrolledCourses = enrolledCourses.map(course => {
         if(course.id === courseId) {
             course.assessments.push(assessment);
         }
         return course;
     });
-    localStorage.setItem("courses", JSON.stringify(allCourses));
+    localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
     window.location.href = `Course.html?id=${courseId}`
 }
 
-function removeCourse(course){
-    event.preventDefault();
-    enrolledCourses.splice(enrolledCourses.indexOf(course), 1);
-    localStorage.setItem("courses", JSON.stringify(enrolledCourses));
-    window.location.href = "studentprofile.html";
-}
+
 function resetCourses(){
+    localStorage.removeItem("assessments");
+    globalAsssessments = [];
     localStorage.removeItem("enrolledCourses");
     enrolledCourses = []
     displayCourses();
 }
 function resetAssessments(){
-    let allCourses = enrolledCourses
     const courseId = new URLSearchParams(window.location.search).get("id");
-    allCourses.forEach(course => {
+    enrolledCourses.forEach(course => {
         if(course.id === courseId) {
+            course.assessments.forEach(assessment => {
+                globalAsssessments.splice(globalAsssessments.indexOf(assessment), 1);
+            })
+            localStorage.setItem("assessments", JSON.stringify(globalAsssessments));
             course.assessments = [];
         }
     })
-    localStorage.setItem("courses", JSON.stringify(allCourses));
+    localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
     window.location.reload();
 }
-function removeAssessment(assessmentName){
-    let allCourses = enrolledCourses
+function removeAssessment(assessmentId){
     const courseId = new URLSearchParams(window.location.search).get("id");
-    allCourses = allCourses.map(course => {
+    enrolledCourses = enrolledCourses.map(course => {
         if(course.id === courseId) {
-            course.assessments = course.assessments.filter(assessment => assessment.name !== assessmentName);
+            course.assessments = course.assessments.filter(assessment => assessment.id !== assessmentId);
         }
             return course;
     });
-    localStorage.setItem("courses", JSON.stringify(allCourses));
+    globalAsssessments = globalAsssessments.filter(assessment =>assessment.id !== assessmentId);
+    localStorage.setItem("assessments", JSON.stringify(globalAsssessments));
+    localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
+    window.location.reload();
+}
+
+function completeAssessment(assessmentId){
+    const courseId = new URLSearchParams(window.location.search).get("id");
+    enrolledCourses.forEach(course => {
+        if(course.id === courseId) {
+            course.assessments.forEach(assmnt => {
+                if(assmnt.id === assessmentId){
+                    assmnt.completed = !assmnt.completed;
+                }
+            })
+        }
+    })
+    globalAsssessments.forEach(assessment => {
+        if(assessment.id === assessmentId) {
+            assessment.completed = !assessment.completed;
+        }
+    })
+    localStorage.setItem("assessments", JSON.stringify(globalAsssessments));
+    localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
     window.location.reload();
 }
 
@@ -176,7 +255,22 @@ function displayCourseInfo(){
     if(currentCourse){
         document.getElementById("classHeader").innerHTML = currentCourse.name;
         document.getElementById("course-code").innerHTML = currentCourse.code;
+        document.getElementById("term").innerHTML = currentCourse.termDate;
     }
+}
+
+function avgGrade(){
+    let sum = 0;
+    const courseId = new URLSearchParams(window.location.search).get("id");
+    enrolledCourses.forEach((course) => {
+        if(course.id === courseId) {
+            course.assessments.forEach(assessment => {
+                sum += assessment.grade;
+            })
+
+            document.getElementById('average').innerHTML = course.assessments.length === 0? "" : sum/course.assessments.length;
+        }
+    })
 }
 window.addEventListener("load",()=>{
     if (document.getElementById("course-grid")) {
@@ -189,6 +283,15 @@ window.addEventListener("load",()=>{
         displayAssessments();
     }
     if(document.getElementById("courses-section")) {
-        displayCoursesToEnroll();
+        displayAvailableCourses();
+    }
+    if(document.getElementById("droppable-courses-section")) {
+        displayEnrolledCourses();
+    }
+    if(document.getElementById("average")) {
+        avgGrade();
+    }
+    if(document.getElementById("assessment-dashboard")) {
+        displayAssessmentsInDashboard();
     }
 })
