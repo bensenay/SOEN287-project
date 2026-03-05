@@ -51,6 +51,13 @@
 <div id="remove" class="tabcontent">
     <h3>Remove Course</h3>
     <p>Here you can remove an existing course.</p>
+    <div class="form-group">
+        <label for="class-code">Class code:</label> <br>
+        <input type="text" id="class-code" placeholder="Class Code"> <br>
+    </div>
+    <div class="button">
+        <button type="submit" onclick="deleteCourse(document.getElementById('class-code').value)">Delete Course</button>
+    </div>
 </div>
 
 <div id="restrict" class="tabcontent">
