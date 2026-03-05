@@ -51,6 +51,12 @@
 <div id="remove" class="tabcontent">
     <h3>Remove Course</h3>
     <p>Here you can remove an existing course.</p>
+    <select id="remove-select" class="course-list-select">
+            
+    </select>
+    <div class="button">
+            <button type="submit" onclick="deleteCourse(document.getElementById('remove-select').value)">Remove</button>
+    </div>
 </div>
 
 <div id="restrict" class="tabcontent">
@@ -58,11 +64,8 @@
     <p>Here you can enable and disable courses.</p>
     <form id="courseRestrictions">
         <label for="courseSelect">Select Course:</label>
-        <select id="courseSelect" name="courseSelect">
-            <option value="course1">Course #1</option>
-            <option value="course2">Course #2</option>
-            <option value="course3">Course #3</option>
-            <option value="course4">Course #4</option>
+        <select id="restrict-select" class="course-list-select">
+            
         </select>
 
         <div class="restriction-options">
@@ -78,7 +81,8 @@
         </div>
     </form>
 </div>
-<script src="adminManageCourses.js"></script>
 <script src="manageClasses.js"></script>
+<script src="adminManageCourses.js"></script>
+
 </body>
 </html>

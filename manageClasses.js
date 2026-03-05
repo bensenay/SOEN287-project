@@ -19,14 +19,26 @@ function createCourse(courseCode, courseName, termDate) {
     availableCourses.push(courseInfo);
     localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
     alert(`Course ${courseName} Created Successfully!`);
+
+    displayCoursesInSelect();
 }
-function deleteCourse(courseCode) {
-    availableCourses.forEach(course => {
-        if(course.code === courseCode){
-            enrolledCourses.splice(enrolledCourses.indexOf(course), 1);
-            localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
-        }
-    })
+function deleteCourse(courseID) {
+    console.log(courseID);
+    const courseIndex = availableCourses.findIndex(course => course.id === courseID);
+    if (courseIndex !== -1) {
+        const courseId = availableCourses[courseIndex].id;
+        // Remove from available
+        availableCourses.splice(courseIndex, 1);
+        // Remove from enrolled
+        enrolledCourses = enrolledCourses.filter(course => course.id !== courseId);
+        
+        localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
+        localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
+        alert("Course deleted successfully");
+        location.reload();
+    }
+
+    displayCoursesInSelect();
 }
 
 function displayAvailableCourses(){

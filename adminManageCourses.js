@@ -22,3 +22,24 @@ document.querySelectorAll(".tablinks").forEach(button => {
     });
 });
 
+function displayCoursesInSelect() {
+    const selects = document.querySelectorAll(".course-list-select");
+
+    selects.forEach(select => {
+        // Clear existing options
+        select.innerHTML = "";
+
+        availableCourses.forEach(course => {
+            const option = document.createElement("option");
+            option.value = course.id;
+            option.textContent = `${course.code} - ${course.name}`;
+            select.appendChild(option);
+        });
+    });
+}
+
+window.addEventListener("load", ()=>{
+    
+    displayCoursesInSelect();
+    
+})
