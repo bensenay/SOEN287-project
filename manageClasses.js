@@ -19,6 +19,7 @@ function createCourse(courseCode, courseName, termDate) {
     availableCourses.push(courseInfo);
     localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
     alert(`Course ${courseName} Created Successfully!`);
+    location.reload();
 }
 function deleteCourse(courseCode) {
     availableCourses.forEach(course => {
