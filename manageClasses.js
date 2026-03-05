@@ -24,10 +24,11 @@ function createCourse(courseCode, courseName, termDate) {
 function deleteCourse(courseCode) {
     availableCourses.forEach(course => {
         if(course.code === courseCode){
-            enrolledCourses.splice(enrolledCourses.indexOf(course), 1);
+            availableCourses.splice(availableCourses.indexOf(course), 1);
             localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
         }
     })
+    window.location.reload();
 }
 
 function displayAvailableCourses(){
