@@ -14,6 +14,7 @@ function createCourse(courseCode, courseName, termDate) {
         code: courseCode,
         name: courseName,
         termDate: termDate,
+        enabled: true,
         assessments: []
     };
     availableCourses.push(courseInfo);
@@ -31,11 +32,27 @@ function deleteCourse(courseCode) {
     window.location.reload();
 }
 
+function disableCourse(courseId) {
+    availableCourses = availableCourses.map(course => {
+        if (course.id === courseId) course.enabled = false;
+        return course;
+    });
+    localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
+}
+
+function enableCourse(courseId) {
+    availableCourses = availableCourses.map(course => {
+        if (course.id === courseId) course.enabled = true;
+        return course;
+    });
+    localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
+}
+
 function displayAvailableCourses(){
     const classSection = document.getElementById("courses-section");
 
     availableCourses.forEach(course => {
-        if (!enrolledCourses.some(e => e.id === course.id)) {
+        if (!enrolledCourses.some(e => e.id === course.id) && course.enabled !== false) {
             const availableCourse = `
             <div>
                 <p><span>${course.code}</span> : ${course.name}</p>
@@ -97,6 +114,10 @@ function displayCoursesInCourseGrid(){
     courseGrid.innerHTML = "";
 
     enrolledCourses.forEach((course) => {
+        // Cross-reference availableCourses to check if the course is still enabled
+        const source = availableCourses.find(c => c.id === course.id);
+        if (source && source.enabled === false) return;
+
         const courseBox = `
         <a href="Course.html?id=${course.id}">
             <div class="course-box">
@@ -109,8 +130,8 @@ function displayCoursesInCourseGrid(){
 }
 
 function displayAssessmentsInDashboard(){
-        globalAsssessments.forEach(assessment => {
-            const assessmentBox = `
+    globalAsssessments.forEach(assessment => {
+        const assessmentBox = `
                 <div class="handout">
                     <div>
                         <h3>${assessment.name}</h3>
@@ -122,20 +143,20 @@ function displayAssessmentsInDashboard(){
                         <h3 style="text-align: center"><span id="assessment-grade">${assessment.grade}</span> / 100</h3>
                     </div>
                 </div>`;
-            document.getElementById('assessment-dashboard').innerHTML += assessmentBox ;
+        document.getElementById('assessment-dashboard').innerHTML += assessmentBox ;
     })
 }
 function displayAssessments(){
-        const courseId = new URLSearchParams(window.location.search).get("id");
-        const currentCourse = enrolledCourses.find((course) => course.id === courseId);
-        if (!currentCourse || !currentCourse.assessments) {
-            console.log("No assessments found for this course.");
-            return;
-        }
-        console.log(currentCourse);
+    const courseId = new URLSearchParams(window.location.search).get("id");
+    const currentCourse = enrolledCourses.find((course) => course.id === courseId);
+    if (!currentCourse || !currentCourse.assessments) {
+        console.log("No assessments found for this course.");
+        return;
+    }
+    console.log(currentCourse);
 
-        currentCourse.assessments.forEach((assessment) => {
-            const assessmentBox = `
+    currentCourse.assessments.forEach((assessment) => {
+        const assessmentBox = `
                 <div class="handout">
                     <div>
                         <h3>${assessment.name}</h3>
@@ -150,21 +171,21 @@ function displayAssessments(){
                         <button id='assessmentStatus' onclick="completeAssessment('${assessment.id}')">Mark as Done/Unfinished</button>
                     </div>
                 </div>`;
-            switch (assessment.type) {
-                case "Assignment":
-                    document.getElementById("assessment-grid").innerHTML += assessmentBox;
-                    break;
-                case "Exam":
-                    document.getElementById("exam-section").innerHTML += assessmentBox;
-                    break;
-                case "Quiz":
-                    document.getElementById("quiz-section").innerHTML += assessmentBox;
-                    break;
-                case "Lab":
-                    document.getElementById("lab-section").innerHTML += assessmentBox;
-                    break;
-            }
-        })
+        switch (assessment.type) {
+            case "Assignment":
+                document.getElementById("assessment-grid").innerHTML += assessmentBox;
+                break;
+            case "Exam":
+                document.getElementById("exam-section").innerHTML += assessmentBox;
+                break;
+            case "Quiz":
+                document.getElementById("quiz-section").innerHTML += assessmentBox;
+                break;
+            case "Lab":
+                document.getElementById("lab-section").innerHTML += assessmentBox;
+                break;
+        }
+    })
 }
 function addAssessment(type, name, dueDate, description){
     event.preventDefault();
@@ -220,7 +241,7 @@ function removeAssessment(assessmentId){
         if(course.id === courseId) {
             course.assessments = course.assessments.filter(assessment => assessment.id !== assessmentId);
         }
-            return course;
+        return course;
     });
     globalAsssessments = globalAsssessments.filter(assessment =>assessment.id !== assessmentId);
     localStorage.setItem("assessments", JSON.stringify(globalAsssessments));

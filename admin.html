@@ -62,28 +62,8 @@
 
 <div id="restrict" class="tabcontent">
     <h3>Enable/Disable Course</h3>
-    <p>Here you can enable and disable courses.</p>
-    <form id="courseRestrictions">
-        <label for="courseSelect">Select Course:</label>
-        <select id="courseSelect" name="courseSelect">
-            <option value="course1">Course #1</option>
-            <option value="course2">Course #2</option>
-            <option value="course3">Course #3</option>
-            <option value="course4">Course #4</option>
-        </select>
-
-        <div class="restriction-options">
-            <input type="radio" id="enable" name="restriction" value="enable" required>
-            <label for="enable">Enable</label>
-
-            <input type="radio" id="disable" name="restriction" value="disable" required>
-            <label for="disable">Disable</label>
-        </div>
-
-        <div class="button">
-            <button type="submit" onclick="applyRestriction(event)">Apply</button>
-        </div>
-    </form>
+    <p>Enable or disable courses for student access.</p>
+    <div class="course-grid" id="restrict-course-grid"></div>
 </div>
 
 <div class="course-overview">
