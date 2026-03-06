@@ -343,12 +343,14 @@ function addAssessment(type, name, dueDate, description){
 }
 
 //unenrolls student from all courses and deletes all their assessments
-function resetCourses(){
-    localStorage.removeItem("assessments");
+function dropAllCourses(){
+    enrolledCourses = [];
     globalAsssessments = [];
-    localStorage.removeItem("enrolledCourses");
-    enrolledCourses = []
-    displayCourses();
+
+    localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
+    localStorage.setItem("assessments", JSON.stringify(globalAsssessments));
+
+    window.location.reload();
 }
 
 //deletes all assessments in the course and removes them from global assessments
