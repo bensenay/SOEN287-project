@@ -4,10 +4,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 30px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    }
+    padding: 10px 30px;
+}
 
 .welcome {
     font-size: 3em;
@@ -31,9 +29,7 @@
 .course-grid{
     width: 70%;
     background-color: white;
-    outline-style: solid;
-    outline-color: lightgray;
-    outline-width: 1px;
+    outline: lightgray solid 1px;
     border-radius: 10px;
     margin: 30px auto;
     display: flex;
@@ -92,9 +88,7 @@ a p{
 }
 .handout{
     min-height: 50px;
-    outline-style: solid;
-    outline-width: 1px ;
-    outline-color: lightgrey;
+    outline: lightgrey solid 1px;
     border-radius: 15px;
     align-content: center;
     display: flex;

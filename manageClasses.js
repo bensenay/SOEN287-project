@@ -19,9 +19,9 @@ function createCourse(courseCode, courseName, termDate) {
     availableCourses.push(courseInfo);
     localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
     alert(`Course ${courseName} Created Successfully!`);
-
-    displayCoursesInSelect();
+    location.reload();
 }
+
 function deleteCourse(courseID) {
     console.log(courseID);
     const courseIndex = availableCourses.findIndex(course => course.id === courseID);
@@ -38,7 +38,7 @@ function deleteCourse(courseID) {
         location.reload();
     }
 
-    displayCoursesInSelect();
+    
 }
 
 function displayAvailableCourses(){
