@@ -32,30 +32,20 @@ function deleteCourse(courseID) {
     
 }
 
-function disableCourse(courseId) {
+function applyRestriction(action, courseId) {
     availableCourses = availableCourses.map(course => {
-        if (course.id === courseId) course.enabled = false;
+        if (course.id === courseId) {
+            course.enabled = (action === "enable");
+
+        }
         return course;
     });
-    localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
-}
 
-function enableCourse(courseId) {
-    availableCourses = availableCourses.map(course => {
-        if (course.id === courseId) course.enabled = true;
-        return course;
-    });
     localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
-}
-
-function applyRestriction(courseId) {
-    let value = document.getElementsByName("restriction").value;
-    console.log(value, courseId);
-    if (restriction === "disable") {
-        disableCourse(courseId);
-    } else if (restriction === "enable") {
-        enableCourse(courseId);
-    }
+    
+    alert(`Course ${action}d successfully!`); // notify user
+    displayAdminCourseGrid(); // update without page refresh
+    displayRestrictGrid();
 }
 
 function openTab(evt, tabName) {
@@ -94,11 +84,12 @@ function displayAdminCourseGrid() {
     }
 
     availableCourses.forEach(course => {
+        const color = course.enabled !== false ? 'black' : 'red';
         const courseBox = `
             <div class="course-box">
                 <img src="https://img.uxcel.com/cdn-cgi/image/format=auto/tags/basic-shapes-1721717546217-2x.jpg" alt="Course Thumbnail">
-                <p>${course.name}</p>
-                <span class="course-code">${course.code}</span>
+                <p style="color: ${color}">${course.name}</p>
+                <span style="color: ${color}" class="course-code">${course.code}</span>
             </div>`;
         courseGrid.innerHTML += courseBox;
     });
@@ -160,8 +151,18 @@ function displayCoursesInSelect() {
 }
 
 window.addEventListener("load", ()=>{
-    
     displayCoursesInSelect();
     displayAdminCourseGrid();
     displayRestrictGrid();
+});
+
+document.getElementById('apply-restriction-btn')?.addEventListener('click', () => {
+    const courseId = document.getElementById('restrict-select').value;
+    const selectedRadio = document.querySelector('input[name="restriction"]:checked');
+    
+    if (selectedRadio && courseId) {
+        applyRestriction(selectedRadio.value, courseId);
+    } else {
+        alert("Please select both a course and an action.");
+    }
 });

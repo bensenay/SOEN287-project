@@ -2,9 +2,10 @@
 .header{
     color: white;
     background-color: #912338;
-    padding: 30px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
 }
 .container{
     display: flex;
@@ -39,9 +40,10 @@ body{
 a{
     color: white;
     text-decoration: none;
-}
+    }
+    
 a p{
-    color: black;
+    color: #912338;
     font-weight: bold;
 }
 a h3{
@@ -50,6 +52,19 @@ a h3{
 span{
     color: #912338;
 }
+
+.course {
+    font-size: 3em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.back {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0;
+}
+
 button{
     border: none;
     font-weight: bold;
