@@ -8,6 +8,7 @@ function signUp(event) {
     }
 
     const firstName = document.getElementById('FirstName').value;
+    const lastName = document.getElementById('LastName').value;
     const email = document.getElementById('UserEmail').value;
     const password = document.getElementById('UserPassword').value;
     const checkedRole = document.querySelector('input[name="TypeOfUser"]:checked');
@@ -20,13 +21,18 @@ function signUp(event) {
 
     // store in local storage (database soon)
     localStorage.setItem('firstName', firstName);
+    localStorage.setItem('lastName', lastName);
     localStorage.setItem('email', email);
     localStorage.setItem('password', password);
     localStorage.setItem('typeOfUser', typeOfUser);
+    if(typeOfUser === 'Student'){
+        localStorage.setItem('studentId', Math.round(Math.random()*100000000));
+    }
 
     // for debugging purposes
     console.log('User information stored in local storage:', {
         firstName: firstName,
+        lastName: lastName,
         email: email,
         password: password,
         typeOfUser: typeOfUser
@@ -62,5 +68,10 @@ function signIn(event) {
     }
 }
 
-document.getElementById('email').innerHTML = localStorage.getItem('email');
-document.getElementById('full-name').innerHTML = localStorage.getItem('firstName');
+function displayStudentInfo() {
+    document.getElementById('email').innerHTML = localStorage.getItem('email');
+    document.getElementById('full-name').innerHTML = localStorage.getItem('firstName') + ' ' + localStorage.getItem('lastName');
+    document.getElementById('student-id').innerHTML = localStorage.getItem('studentId');
+}
+
+window.addEventListener('load', displayStudentInfo);
