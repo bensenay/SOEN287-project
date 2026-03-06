@@ -51,6 +51,38 @@ document.querySelectorAll(".tablinks").forEach(button => {
     });
 });
 
+function displayRestrictGrid() {
+    const grid = document.getElementById("restrict-course-grid");
+    if (!grid) return;
+
+    const availableCourses = JSON.parse(localStorage.getItem("availableCourses")) || [];
+
+    grid.innerHTML = "";
+
+    if (availableCourses.length === 0) {
+        grid.innerHTML = `<p class="no-courses">No courses created yet.</p>`;
+        return;
+    }
+
+    availableCourses.forEach(course => {
+        const isEnabled = course.enabled !== false;
+        const card = `
+            <div class="course-box">
+                <img src="https://img.uxcel.com/cdn-cgi/image/format=auto/tags/basic-shapes-1721717546217-2x.jpg" alt="Course Thumbnail">
+                <p>${course.name}</p>
+                <span class="course-code">${course.code}</span>
+                <span style="font-size:12px; color: ${isEnabled ? 'green' : 'red'}; font-weight: bold;">
+                    ${isEnabled ? 'Enabled' : 'Disabled'}
+                </span>
+                <div style="display:flex; gap:8px; margin-top:6px;">
+                    <button onclick="enableCourse('${course.id}'); displayRestrictGrid();" ${isEnabled ? 'disabled' : ''}>Enable</button>
+                    <button onclick="disableCourse('${course.id}'); displayRestrictGrid();" ${!isEnabled ? 'disabled' : ''}>Disable</button>
+                </div>
+            </div>`;
+        grid.innerHTML += card;
+    });
+}
+
 function displayCoursesInSelect() {
     const selects = document.querySelectorAll(".course-list-select");
 
@@ -71,4 +103,5 @@ window.addEventListener("load", ()=>{
     
     displayCoursesInSelect();
     displayAdminCourseGrid();
-})
+    displayRestrictGrid();
+});
