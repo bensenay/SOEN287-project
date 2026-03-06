@@ -35,11 +35,13 @@ function displayAdminCourseGrid() {
 
     availableCourses.forEach(course => {
         const courseBox = `
-            <div class="course-box">
-                <img src="https://img.uxcel.com/cdn-cgi/image/format=auto/tags/basic-shapes-1721717546217-2x.jpg" alt="Course Thumbnail">
-                <p>${course.name}</p>
-                <span class="course-code">${course.code}</span>
-            </div>`;
+            <a href="adminCourse.html?id=${course.id}">
+                <div class="course-box">
+                    <img src="https://img.uxcel.com/cdn-cgi/image/format=auto/tags/basic-shapes-1721717546217-2x.jpg" alt="Course Thumbnail">
+                    <p>${course.name}</p>
+                    <span class="course-code">${course.code}</span>
+                </div>
+            </a>`;
         courseGrid.innerHTML += courseBox;
     });
 }
