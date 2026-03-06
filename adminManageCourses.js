@@ -1,3 +1,63 @@
+function createCourse(courseCode, courseName, termDate) {
+    let courseInfo ={
+        id : Date.now().toString(),
+        code: courseCode,
+        name: courseName,
+        termDate: termDate,
+        enabled: true,
+        assessments: []
+    };
+    availableCourses.push(courseInfo);
+    localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
+    alert(`Course ${courseName} Created Successfully!`);
+    location.reload();
+}
+
+function deleteCourse(courseID) {
+    console.log(courseID);
+    const courseIndex = availableCourses.findIndex(course => course.id === courseID);
+    if (courseIndex !== -1) {
+        const courseId = availableCourses[courseIndex].id;
+        // Remove from available
+        availableCourses.splice(courseIndex, 1);
+        // Remove from enrolled
+        enrolledCourses = enrolledCourses.filter(course => course.id !== courseId);
+        
+        localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
+        localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
+        alert("Course deleted successfully");
+        location.reload();
+    }
+
+    
+}
+
+function disableCourse(courseId) {
+    availableCourses = availableCourses.map(course => {
+        if (course.id === courseId) course.enabled = false;
+        return course;
+    });
+    localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
+}
+
+function enableCourse(courseId) {
+    availableCourses = availableCourses.map(course => {
+        if (course.id === courseId) course.enabled = true;
+        return course;
+    });
+    localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
+}
+
+function applyRestriction(courseId) {
+    let value = document.getElementsByName("restriction").value;
+    console.log(value, courseId);
+    if (restriction === "disable") {
+        disableCourse(courseId);
+    } else if (restriction === "enable") {
+        enableCourse(courseId);
+    }
+}
+
 function openTab(evt, tabName) {
     let targetTab = document.getElementById(tabName);
     let tabcontent = document.getElementsByClassName("tabcontent");
