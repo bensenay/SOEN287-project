@@ -509,3 +509,155 @@ window.addEventListener("load",()=>{
         updateGraph();
     }
 })
+//displays a summary page with GPA estimate, course progress and upcoming assessments
+function renderProgressSummary(){
+    const gpaElement = document.getElementById("estimated-gpa");
+    const totalCoursesElement = document.getElementById("total-courses");
+    const completedElement = document.getElementById("completed-assessments");
+    const pendingElement = document.getElementById("pending-assessments");
+    const progressSection = document.getElementById("course-progress-section");
+    const upcomingSection = document.getElementById("upcoming-assessments-section");
+
+    // stop function if page elements do not exist
+    if(!gpaElement || !totalCoursesElement || !completedElement || !pendingElement || !progressSection || !upcomingSection){
+        return;
+    }
+
+    totalCoursesElement.innerHTML = enrolledCourses.length;
+
+    let completedCount = 0;
+    let pendingCount = 0;
+
+    globalAsssessments.forEach(assessment => {
+        if(assessment.completed){
+            completedCount++;
+        } else {
+            pendingCount++;
+        }
+    });
+
+    completedElement.innerHTML = completedCount;
+    pendingElement.innerHTML = pendingCount;
+
+    let totalAverage = 0;
+    let coursesWithGrades = 0;
+
+    progressSection.innerHTML = "";
+
+    if(enrolledCourses.length === 0){
+        progressSection.innerHTML = `<div class="empty-message"><p>No enrolled courses to display yet.</p></div>`;
+    } else {
+        enrolledCourses.forEach(course => {
+            let average = 0;
+            let completedInCourse = 0;
+            let totalInCourse = 0;
+
+            if(course.assessments && course.assessments.length > 0){
+                let gradeSum = 0;
+                let gradedCount = 0;
+
+                course.assessments.forEach(assessment => {
+                    totalInCourse++;
+
+                    if(assessment.completed){
+                        completedInCourse++;
+                    }
+
+                    if(!isNaN(assessment.grade)){
+                        gradeSum += Number(assessment.grade);
+                        gradedCount++;
+                    }
+                });
+
+                if(gradedCount > 0){
+                    average = Math.round(gradeSum / gradedCount);
+                    totalAverage += average;
+                    coursesWithGrades++;
+                }
+            }
+
+            let progressPercent = 0;
+            if(totalInCourse > 0){
+                progressPercent = Math.round((completedInCourse / totalInCourse) * 100);
+            }
+
+            const progressCard = `
+                <div class="progress-card">
+                    <h2>${course.code} - ${course.name}</h2>
+                    <div class="progress-details">
+                        <p><strong>Current Average:</strong> <span>${average}%</span></p>
+                        <p><strong>Completed:</strong> <span>${completedInCourse}/${totalInCourse}</span></p>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progressPercent}%;"></div>
+                    </div>
+                </div>
+            `;
+
+            progressSection.innerHTML += progressCard;
+        });
+    }
+
+    let estimatedGpa = 0;
+
+    if(coursesWithGrades > 0){
+        const overallAverage = totalAverage / coursesWithGrades;
+
+        if(overallAverage >= 90){
+            estimatedGpa = 4.3;
+        } else if(overallAverage >= 85){
+            estimatedGpa = 4.0;
+        } else if(overallAverage >= 80){
+            estimatedGpa = 3.7;
+        } else if(overallAverage >= 77){
+            estimatedGpa = 3.3;
+        } else if(overallAverage >= 73){
+            estimatedGpa = 3.0;
+        } else if(overallAverage >= 70){
+            estimatedGpa = 2.7;
+        } else if(overallAverage >= 67){
+            estimatedGpa = 2.3;
+        } else if(overallAverage >= 63){
+            estimatedGpa = 2.0;
+        } else if(overallAverage >= 60){
+            estimatedGpa = 1.7;
+        } else if(overallAverage >= 57){
+            estimatedGpa = 1.3;
+        } else if(overallAverage >= 53){
+            estimatedGpa = 1.0;
+        } else if(overallAverage >= 50){
+            estimatedGpa = 0.7;
+        } else {
+            estimatedGpa = 0.0;
+        }
+    }
+
+    gpaElement.innerHTML = estimatedGpa.toFixed(2);
+
+    let sortedAssessments = [...globalAsssessments].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+
+    upcomingSection.innerHTML = "";
+
+    const pendingAssessments = sortedAssessments.filter(assessment => !assessment.completed);
+
+    if(pendingAssessments.length === 0){
+        upcomingSection.innerHTML = `<div class="empty-message"><p>No upcoming assessments right now.</p></div>`;
+    } else {
+        pendingAssessments.slice(0, 5).forEach(assessment => {
+            const upcomingBox = `
+                <div class="handout">
+                    <div>
+                        <h3>${assessment.name}</h3>
+                        <p><strong>Due Date:</strong> ${assessment.dueDate}</p>
+                        <p>${assessment.description}</p>
+                        <p>Pending...</p>
+                    </div>
+                    <div>
+                        <h3><span>${assessment.grade}</span> / 100</h3>
+                    </div>
+                </div>
+            `;
+            upcomingSection.innerHTML += upcomingBox;
+        });
+    }
+}

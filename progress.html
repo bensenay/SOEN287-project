@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Summary</title>
+    <link rel="stylesheet" href="student.css">
+</head>
+<body>
+    <div class="header">
+        <h1 class="welcome">Progress Summary</h1>
+        <a href="student.html">
+            <h1 class="profile">Back to Hub</h1>
+        </a>
+    </div>
+
+    <div class="course-overview">
+        <h1>Academic Overview</h1>
+    </div>
+
+    <!--quick summary cards-->
+    <div class="summary-grid">
+        <div class="summary-card">
+         <h2>Estimated GPA</h2>
+         <p id="estimated-gpa">0.00</p>
+        </div>
+        <div class="summary-card">
+        <h2>Enrolled Courses</h2>
+        <p id="total-courses">0</p>
+        </div>
+
+        <div class="summary-card">
+            <h2>Completed Assessments</h2>
+            <p id="completed-assessments">0</p>
+        </div>
+        <div class="summary-card">
+         <h2>Pending Assessments</h2>
+         <p id="pending-assessments">0</p>
+        </div>
+    </div>
+
+    <div class="assessment-dashboard">
+        <h1>Course Progress</h1>
+       <div id="course-progress-section"></div>
+    </div>
+
+    <div class="assessment-dashboard">
+        <h1>Upcoming Assessments</h1>
+        <div id="upcoming-assessments-section"></div>
+    </div>
+
+    <script src="manageClasses.js"></script>
+    <script>
+        renderProgressSummary();
+    </script>
+</body>
+</html>
