@@ -87,7 +87,85 @@ app.get("/", (request, response) => {
     response.sendFile(__dirname + "/public/SignIn.html");
 });
 
+app.get("/courses/available", (request, response) => {
+    if (!request.session.userId) {
+        return response.status(401).json({error: "Unauthorized"});
+    }
+    const sql = `
+        SELECT * FROM courses
+        WHERE enabled = 1
+        AND id NOT IN (
+            SELECT course_id FROM student_courses WHERE student_id = ?
+        )
+    `;
+    db.query(sql, [request.session.userId], (err, results) => {
+        if (err)
+            return response.status(500).json({error: "Database error"});
+        response.json(results);
+    });
+});
 
-app.listen(5000, () => {
-    console.log('Server is running on http://localhost:5000');
+app.get("/courses/enrolled", (request, response) => {
+    if (!request.session.userId) {
+        return response.status(401).json({error: "Unauthorized"});
+    }
+    const sql = `
+        SELECT courses.* FROM courses
+        JOIN student_courses ON courses.id = student_courses.course_id
+        WHERE student_courses.student_id = ?
+    `;
+    db.query(sql, [request.session.userId], (err, results) => {
+        if (err)
+            return response.status(500).json({error: "Database error"});
+        response.json(results);
+    });
+});
+
+app.post("/courses/enroll", (request, response) => {
+    if (!request.session.userId) {
+        return response.status(401).json({error: "Unauthorized"});
+    }
+    const { courseCode } = request.body;
+    db.query("SELECT * FROM courses WHERE code = ?", [courseCode], (err, results) => {
+        if (err)
+            return response.status(500).json({error: "Database error"});
+        if (results.length === 0)
+            return response.status(404).json({error: "Course not found"});
+        const course = results[0];
+        db.query("SELECT * FROM student_courses WHERE student_id = ? AND course_id = ?", [request.session.userId, course.id], (err, existing) => {
+            if (err)
+                return response.status(500).json({error: "Database error"});
+            if (existing.length > 0)
+                return response.status(400).json({error: "Already enrolled"});
+            db.query("INSERT INTO student_courses (student_id, course_id) VALUES (?, ?)", [request.session.userId, course.id], (err) => {
+                if (err)
+                    return response.status(500).json({error: "Database error"});
+                response.json({ok: true});
+            });
+        });
+    });
+});
+
+app.post("/courses/drop", (request, response) => {
+    if (!request.session.userId) {
+        return response.status(401).json({error: "Unauthorized"});
+    }
+    const { courseCode } = request.body;
+    db.query("SELECT * FROM courses WHERE code = ?", [courseCode], (err, results) => {
+        if (err)
+            return response.status(500).json({error: "Database error"});
+        if (results.length === 0)
+            return response.status(404).json({error: "Course not found"});
+        const course = results[0];
+        db.query("DELETE FROM student_courses WHERE student_id = ? AND course_id = ?", [request.session.userId, course.id], (err) => {
+            if (err)
+                return response.status(500).json({error: "Database error"});
+            response.json({ok: true});
+        });
+    });
+});
+
+
+app.listen(3000, () => {
+    console.log('Server is running on http://localhost:3000');
 });

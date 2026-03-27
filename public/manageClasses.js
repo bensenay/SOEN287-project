@@ -123,72 +123,84 @@ function saveGrade(assessmentId) {
 //displays courses that are available for the student to enroll in addClasses.html
 function displayAvailableCourses(){
     const classSection = document.getElementById("courses-section");
-    availableCourses.forEach(course => {
-        //check that student is not already enrolled in current course in loop
-        if (!enrolledCourses.some(e => e.id === course.id) && course.enabled !== false) {
-            const availableCourse = `
-            <div>
-                <p><span>${course.code}</span> : ${course.name}</p>
-                <hr>    
-            </div>
-            `
-            classSection.innerHTML += availableCourse; // add div to "courses-section"
-        }
-    })
+    fetch('/courses/available')
+        .then(res => res.json())
+        .then(courses => {
+            courses.forEach(course => {
+                const availableCourse = `
+                <div>
+                    <p><span>${course.code}</span> : ${course.name}</p>
+                    <hr>    
+                </div>
+                `;
+                classSection.innerHTML += availableCourse;
+            });
+        });
 }
 
 //displays courses student is enrolled in and can drop in dropClasses.html
 function displayEnrolledCourses() {
     const classSection = document.getElementById("droppable-courses-section");
-    enrolledCourses.forEach(course => {
-        const enrolledCourse = `
-            <div>
-                <p><span>${course.code}</span> : ${course.name}</p>
-                <hr>
-            </div>
-            `;
-        classSection.innerHTML += enrolledCourse;
-    })
+    fetch('/courses/enrolled')
+        .then(res => res.json())
+        .then(courses => {
+            courses.forEach(course => {
+                const enrolledCourse = `
+                    <div>
+                        <p><span>${course.code}</span> : ${course.name}</p>
+                        <hr>
+                    </div>
+                    `;
+                classSection.innerHTML += enrolledCourse;
+            });
+        });
 }
 
 //function adds courses to enrolledCourses when Add Class button is pressed
 function enrollInCourse(courseCode){
-    availableCourses.forEach(course => {
-        if(course.code === courseCode) {
-            // check that student is not already enrolled
-            if(enrolledCourses.some(e => e.id === course.id)) {
-                alert("You are already enrolled in this class!")
-                return;
-            }
-            // add course to enrolledCourses and save to localStorage
-            enrolledCourses.push(course);
-            localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
-        }
+    fetch('/courses/enroll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseCode: courseCode })
     })
-    window.location.href = "studentprofile.html";
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            window.location.href = "studentprofile.html";
+        }
+    });
 }
-//function removes course  from enrolledCourses when Drop Class button is pressed
+
+//function removes course from enrolledCourses when Drop Class button is pressed
 function unenrollFromCourse(courseCode){
-    event.preventDefault();
-    enrolledCourses.forEach(course => {
-        if(course.code === courseCode){
-            //remove course from enrolledCourses and save
-            enrolledCourses.splice(enrolledCourses.indexOf(course), 1);
-            localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
-        }
+    fetch('/courses/drop', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseCode: courseCode })
     })
-    window.location.href = "studentprofile.html";
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            window.location.href = "studentprofile.html";
+        }
+    });
 }
 
 //for student profile to display enrolled classes
 function displayCourses(){
-    string = "";
-    for(i = 0; i < enrolledCourses.length; i++){
-        if(enrolledCourses[i].name !== undefined){
-            string += enrolledCourses[i].code + " ";
-        }
-    }
-    document.getElementById("courses-enrolled").innerHTML = string;
+    fetch('/courses/enrolled')
+        .then(res => res.json())
+        .then(courses => {
+            let string = "";
+            courses.forEach(course => {
+                string += course.code + " ";
+            });
+            document.getElementById("courses-enrolled").innerHTML = string;
+        });
 }
 
 //for student hub to display enrolled classes
@@ -197,21 +209,22 @@ function displayCoursesInCourseGrid(){
 
     courseGrid.innerHTML = ""; // reset course-grid before editing
 
-    enrolledCourses.forEach((course) => {
-        const source = availableCourses.find(c => c.id === course.id);
-        if (source && source.enabled === false) return; //check that course is enabled
-
-        //create pre-defined div, has to link to course with personalized id
-        const courseBox = `
-        <a href="Course.html?id=${course.id}">
-            <div class="course-box">
-                <img src="https://img.uxcel.com/cdn-cgi/image/format=auto/tags/basic-shapes-1721717546217-2x.jpg" alt="">
-                <p>${course.name}</p>
-            </div>
-        </a>`;
-        //add courseBox to course-grid
-        courseGrid.innerHTML += courseBox;
-    })
+    fetch('/courses/enrolled')
+        .then(res => res.json())
+        .then(courses => {
+            courses.forEach(course => {
+                //create pre-defined div, has to link to course with personalized id
+                const courseBox = `
+                <a href="Course.html?id=${course.id}">
+                    <div class="course-box">
+                        <img src="https://img.uxcel.com/cdn-cgi/image/format=auto/tags/basic-shapes-1721717546217-2x.jpg" alt="">
+                        <p>${course.name}</p>
+                    </div>
+                </a>`;
+                //add courseBox to course-grid
+                courseGrid.innerHTML += courseBox;
+            });
+        });
 }
 
 //displays all assessments for all classes in the Assessment Dashboard
