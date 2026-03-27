@@ -146,6 +146,62 @@ app.post("/courses/enroll", (request, response) => {
     });
 });
 
+app.get("/courses/:id", (request, response) => {
+    db.query("SELECT * FROM courses WHERE id = ?", [request.params.id], (err, results) => {
+        if (err)
+            return response.status(500).json({error: "Database error"});
+        if (results.length === 0)
+            return response.status(404).json({error: "Course not found"});
+        response.json(results[0]);
+    });
+});
+
+app.get("/admin/courses", (request, response) => {
+    db.query("SELECT * FROM courses", (err, results) => {
+        if (err)
+            return response.status(500).json({error: "Database error"});
+        response.json(results);
+    });
+});
+
+app.post("/admin/courses/create", (request, response) => {
+    const { code, name, term } = request.body;
+    db.query("SELECT * FROM courses WHERE code = ?", [code], (err, results) => {
+        if (err)
+            return response.status(500).json({error: "Database error"});
+        if (results.length > 0)
+            return response.status(400).json({error: "Course code already exists"});
+        db.query("INSERT INTO courses (code, name, term, enabled) VALUES (?, ?, ?, 1)", [code, name, term], (err) => {
+            if (err)
+                return response.status(500).json({error: "Database error"});
+            response.json({ok: true});
+        });
+    });
+});
+
+app.post("/admin/courses/delete", (request, response) => {
+    const { courseId } = request.body;
+    db.query("DELETE FROM student_courses WHERE course_id = ?", [courseId], (err) => {
+        if (err)
+            return response.status(500).json({error: "Database error"});
+        db.query("DELETE FROM courses WHERE id = ?", [courseId], (err) => {
+            if (err)
+                return response.status(500).json({error: "Database error"});
+            response.json({ok: true});
+        });
+    });
+});
+
+app.post("/admin/courses/restrict", (request, response) => {
+    const { courseId, action } = request.body;
+    const enabled = action === "enable" ? 1 : 0;
+    db.query("UPDATE courses SET enabled = ? WHERE id = ?", [enabled, courseId], (err) => {
+        if (err)
+            return response.status(500).json({error: "Database error"});
+        response.json({ok: true});
+    });
+});
+
 app.post("/courses/drop", (request, response) => {
     if (!request.session.userId) {
         return response.status(401).json({error: "Unauthorized"});

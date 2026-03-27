@@ -423,15 +423,15 @@ function completeAssessment(assessmentId){
 
 //displays the information of the current course
 function displayCourseInfo(){
-    console.log(window.location.search);
     const urlParams = new URLSearchParams(window.location.search);
     const courseId = urlParams.get("id");
-    const currentCourse = availableCourses.find(course => course.id === courseId);
-    if(currentCourse){
-        document.getElementById("classHeader").innerHTML = currentCourse.name;
-        document.getElementById("course-code").innerHTML = currentCourse.code;
-        document.getElementById("term").innerHTML = currentCourse.termDate;
-    }
+    fetch(`/courses/${courseId}`)
+        .then(res => res.json())
+        .then(course => {
+            document.getElementById("classHeader").innerHTML = course.name;
+            document.getElementById("course-code").innerHTML = course.code;
+            document.getElementById("term").innerHTML = course.term;
+        });
 }
 
 //calculates the average grade of the course
