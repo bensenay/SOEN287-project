@@ -1,44 +1,32 @@
-//arrays stored in local storage so that the data is saved
-
-let enrolledCoursesData = localStorage.getItem("enrolledCourses");
-let enrolledCourses = JSON.parse(enrolledCoursesData) || []; //return empty array if parse fails
-
-let availableCoursesData = localStorage.getItem("availableCourses");
-let availableCourses = JSON.parse(availableCoursesData) || [];
-
-let globalAssessmentsData = localStorage.getItem("assessments");
-let globalAsssessments = JSON.parse(globalAssessmentsData) || [];
-
-const DEFAULT_WEIGHTS = { Assignment: 25, Exam: 25, Quiz: 25, Lab: 25 }; // default weight of each assessment type
 const ASSESSMENT_TYPES = ["Assignment", "Exam","Quiz","Lab"];
+let selectedStudentId = null;
 
-// returns the weights of each assessment type of the course that matched with courseId
+// returns the weights of each assessment type from the backend
 function getCourseWeights(courseId) {
-    const stored = localStorage.getItem(`weights_${courseId}`);
-    return stored ? JSON.parse(stored) : { ...DEFAULT_WEIGHTS };
+    return fetch(`/courses/${courseId}/weights`).then(res => res.json());
 }
 
 //displays the weight of each assessment type for the current course
 function displayCourseWeights(){
     const courseId = new URLSearchParams(window.location.search).get('id');
-    const weights = getCourseWeights(courseId);
-    ASSESSMENT_TYPES.forEach(type => {
-        const display = document.getElementById(`weight-display-${type}`); // so type[0] will find id = 'weight-display-Assignment'
-        if(display) // null check
-            display.innerHTML = weights[type];
-    })
+    getCourseWeights(courseId).then(weights => {
+        ASSESSMENT_TYPES.forEach(type => {
+            const display = document.getElementById(`weight-display-${type}`);
+            if(display)
+                display.innerHTML = weights[type];
+        });
+    });
 }
 
 //allows weight of type to be changeable or not changeable based on its current state
 function toggleWeightEdit(type){
-    const courseId = new URLSearchParams(window.location.search).get("id");
     const editSpan = document.getElementById(`weight-edit-${type}`);
     const input = document.getElementById(`weight-input-${type}`);
-    const weights = getCourseWeights(courseId);
+    const display = document.getElementById(`weight-display-${type}`);
 
     //changes display to input to allow editing
     if(editSpan.style.display === "none"){
-        input.value = weights[type];
+        input.value = display ? display.textContent.trim() : 25;
         editSpan.style.display = "inline-flex";
         input.focus();
         input.select();
@@ -59,14 +47,21 @@ function saveWeight(type){
         return;
     }
 
-    const weights = getCourseWeights(courseId);
-    weights[type] = val;
-    localStorage.setItem(`weights_${courseId}`, JSON.stringify(weights)); //store weight into localStorage
-
-    const display = document.getElementById(`weight-display-${type}`);
-    if (display) display.textContent = val; // null check
-
-    document.getElementById(`weight-edit-${type}`).style.display = "none"; // remove input field
+    fetch(`/courses/${courseId}/weights`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, weight: val })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            const display = document.getElementById(`weight-display-${type}`);
+            if (display) display.textContent = val;
+            document.getElementById(`weight-edit-${type}`).style.display = "none";
+        }
+    });
 }
 
 //allows grade of type to be changeable or not changeable based on its current state
@@ -77,10 +72,8 @@ function toggleGradeEdit(assessmentId){
 
     //changes display to input to allow editing
     if (editSpan.style.display === "none") {
-        const courseId = new URLSearchParams(window.location.search).get("id");
-        const course = availableCourses.find(c => c.id === courseId);
-        const assessment = course?.assessments.find(a => a.id === assessmentId);
-        input.value = assessment ? assessment.grade : 0;
+        const gradeDisplay = document.getElementById(`grade-display-${assessmentId}`);
+        input.value = gradeDisplay ? gradeDisplay.textContent.trim() : 0;
         editSpan.style.display = "inline-flex";
         input.focus();
         input.select();
@@ -92,7 +85,6 @@ function toggleGradeEdit(assessmentId){
 //button saves the grade that was input for the assessment with "assessmentId"
 
 function saveGrade(assessmentId) {
-    const courseId = new URLSearchParams(window.location.search).get("id");
     const input = document.getElementById(`grade-input-${assessmentId}`);
     const val = parseInt(input.value);
 
@@ -101,23 +93,25 @@ function saveGrade(assessmentId) {
         return;
     }
 
-    //need to update assessment in both arrays availableCourses and globalAssessments
-    availableCourses.forEach(course => {
-        if (course.id === courseId)
-        course.assessments.forEach(a => {
-            if (a.id === assessmentId)
-                a.grade = val;
-        })
+    const body = { assessmentId: assessmentId, grade: val };
+    if (selectedStudentId) body.studentId = selectedStudentId;
+    fetch('/assessments/grade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
     })
-
-    globalAsssessments.forEach(a =>{
-        if (a.id === assessmentId)
-            a.grade = val;
-    })
-
-    localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
-    localStorage.setItem("assessments", JSON.stringify(globalAsssessments));
-    window.location.reload();
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            if (selectedStudentId) {
+                loadStudentAssessments();
+            } else {
+                window.location.reload();
+            }
+        }
+    });
 }
 
 //displays courses that are available for the student to enroll in addClasses.html
@@ -229,196 +223,217 @@ function displayCoursesInCourseGrid(){
 
 //displays all assessments for all classes in the Assessment Dashboard
 function displayAssessmentsInDashboard(){
-        globalAsssessments.forEach(assessment => {
-            //pre-defined assessment div
-            const assessmentBox = `
-                <div class="handout">
-                    <div>
-                        <h3>${assessment.name}</h3>
-                        <p>Date: ${assessment.dueDate}</p>
-                        <p>${assessment.description}</p>
-                        <p>${assessment.completed? 'Complete!' : 'Pending...'}</p>
-                    </div>
-                    <div>
-                        <h3><span id="assessment-grade">${assessment.grade}</span> / 100</h3>
-                    </div>
-                </div>`;
-            document.getElementById('assessment-dashboard').innerHTML += assessmentBox ;
-    })
+    fetch('/assessments')
+        .then(res => res.json())
+        .then(assessments => {
+            assessments.forEach(assessment => {
+                //pre-defined assessment div
+                const assessmentBox = `
+                    <div class="handout">
+                        <div>
+                            <h3>${assessment.name}</h3>
+                            <p>Date: ${assessment.dueDate}</p>
+                            <p>${assessment.description}</p>
+                            <p>${assessment.completed? 'Complete!' : 'Pending...'}</p>
+                        </div>
+                        <div>
+                            <h3><span id="assessment-grade">${assessment.grade}</span> / 100</h3>
+                        </div>
+                    </div>`;
+                document.getElementById('assessment-dashboard').innerHTML += assessmentBox;
+            });
+        });
 }
 
 //displays assessments in adminCourse.html based on the id
 function displayAssessmentsAdmin(){
     const courseId = new URLSearchParams(window.location.search).get("id");
-    const currentCourse = availableCourses.find((course) => course.id === courseId);
-    currentCourse.assessments.forEach((assessment) => {
-        //predefined div
-        const assessmentBox = `
-                <div class="handout">
-                    <div>
-                        <h3>${assessment.name}</h3>
-                        <p>Date: ${assessment.dueDate}</p>
-                        <p>${assessment.description}</p>
-                        <p>${assessment.completed? 'Complete!' : 'Pending...'}</p>
-                    </div>
-                    <div style="display: flex;flex-direction: column;gap: 20px">
-                        <h3 style="text-align: center"><span id="assessment-grade">${assessment.grade}</span> / 100</h3>
-                        <button onclick="toggleGradeEdit('${assessment.id}')">Edit grade</button> <!-- button that handles grade editing -->
-                        <span id="grade-edit-${assessment.id}" style="display: none">
-                            <input type="number" min="0" max="100" id="grade-input-${assessment.id}">
-                            <button onclick="saveGrade('${assessment.id}')">Save</button> <!-- button that handle grade saving-->
-                        </span>
-                        <button onclick="removeAssessment('${assessment.id}')">Remove Assessment</button> <!-- button that removes the assessment from all lists-->
-                        <button id='assessmentStatus' onclick="completeAssessment('${assessment.id}')">Mark as Done/Unfinished</button> <!-- button that marks the assessment as complete/pending-->
-                    </div>
-                </div>`;
-        //check the assessment type to make sure it gets placed in the right category
-        switch (assessment.type) {
-            case "Assignment":
-                document.getElementById("assignment-section").innerHTML += assessmentBox;
-                break;
-            case "Exam":
-                document.getElementById("exam-section").innerHTML += assessmentBox;
-                break;
-            case "Quiz":
-                document.getElementById("quiz-section").innerHTML += assessmentBox;
-                break;
-            case "Lab":
-                document.getElementById("lab-section").innerHTML += assessmentBox;
-                break;
-        }
-    })
+    const select = document.getElementById("student-selector");
+    if (!select) return;
+    fetch(`/courses/${courseId}/students`)
+        .then(res => res.json())
+        .then(students => {
+            select.innerHTML = '<option value="">-- Select a student --</option>';
+            students.forEach(s => {
+                select.innerHTML += `<option value="${s.id}">${s.firstName} ${s.lastName}</option>`;
+            });
+            select.onchange = function() {
+                selectedStudentId = this.value;
+                if (selectedStudentId) {
+                    loadStudentAssessments();
+                    avgGrade();
+                    updateGraph();
+                }
+            };
+        });
+}
+//loads and renders assessments for the selected student (admin grading)
+function loadStudentAssessments(){
+    const courseId = new URLSearchParams(window.location.search).get("id");
+    ["assignment-section","exam-section","quiz-section","lab-section"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = "";
+    });
+    fetch(`/courses/${courseId}/assessments?studentId=${selectedStudentId}`)
+        .then(res => res.json())
+        .then(assessments => {
+            assessments.forEach(assessment => {
+                const assessmentBox = `
+                        <div class="handout">
+                            <div>
+                                <h3>${assessment.name}</h3>
+                                <p>Date: ${assessment.dueDate}</p>
+                                <p>${assessment.description}</p>
+                                <p>${assessment.completed? 'Complete!' : 'Pending...'}</p>
+                            </div>
+                            <div style="display: flex;flex-direction: column;gap: 20px">
+                                <h3 style="text-align: center"><span id="grade-display-${assessment.id}">${assessment.grade}</span> / 100</h3>
+                                <button onclick="toggleGradeEdit('${assessment.id}')">Edit grade</button>
+                                <span id="grade-edit-${assessment.id}" style="display: none">
+                                    <input type="number" min="0" max="100" id="grade-input-${assessment.id}">
+                                    <button onclick="saveGrade('${assessment.id}')">Save</button>
+                                </span>
+                                <button onclick="removeAssessment('${assessment.id}')">Remove Assessment</button>
+                                <button id='assessmentStatus' onclick="completeAssessment('${assessment.id}')">Mark as Done/Unfinished</button>
+                            </div>
+                        </div>`;
+                switch (assessment.type) {
+                    case "Assignment": document.getElementById("assignment-section").innerHTML += assessmentBox; break;
+                    case "Exam": document.getElementById("exam-section").innerHTML += assessmentBox; break;
+                    case "Quiz": document.getElementById("quiz-section").innerHTML += assessmentBox; break;
+                    case "Lab": document.getElementById("lab-section").innerHTML += assessmentBox; break;
+                }
+            });
+        });
 }
 //displays assessments in Course.html based on the id (similar to function above but students can't edit grades
 function displayAssessmentsStudent(){
     const courseId = new URLSearchParams(window.location.search).get("id");
-    const currentCourse = availableCourses.find((course) => course.id === courseId);
-    currentCourse.assessments.forEach((assessment) => {
-        const assessmentBox = `
-                <div class="handout">
-                    <div>
-                        <h3>${assessment.name}</h3>
-                        <p>Date: ${assessment.dueDate}</p>
-                        <p>${assessment.description}</p>
-                        <p>${assessment.completed? 'Complete!' : 'Pending...'}</p>
-                    </div>
-                    <div style="display: flex;flex-direction: column;gap: 20px">
-                        <h3 style="text-align: center"><span id="assessment-grade">${assessment.grade}</span> / 100</h3>
-                        <button onclick="removeAssessment('${assessment.id}')">Remove Assessment</button>
-                        <button id='assessmentStatus' onclick="completeAssessment('${assessment.id}')">Mark as Done/Unfinished</button>
-                    </div>
-                </div>`;
-        //check the assessment type to make sure it gets placed in the right category
-        switch (assessment.type) {
-            case "Assignment":
-                document.getElementById("assignment-section").innerHTML += assessmentBox;
-                break;
-            case "Exam":
-                document.getElementById("exam-section").innerHTML += assessmentBox;
-                break;
-            case "Quiz":
-                document.getElementById("quiz-section").innerHTML += assessmentBox;
-                break;
-            case "Lab":
-                document.getElementById("lab-section").innerHTML += assessmentBox;
-                break;
-        }
-    })
+    fetch(`/courses/${courseId}/assessments`)
+        .then(res => res.json())
+        .then(assessments => {
+            assessments.forEach(assessment => {
+                const assessmentBox = `
+                        <div class="handout">
+                            <div>
+                                <h3>${assessment.name}</h3>
+                                <p>Date: ${assessment.dueDate}</p>
+                                <p>${assessment.description}</p>
+                                <p>${assessment.completed? 'Complete!' : 'Pending...'}</p>
+                            </div>
+                            <div style="display: flex;flex-direction: column;gap: 20px">
+                                <h3 style="text-align: center"><span id="assessment-grade">${assessment.grade}</span> / 100</h3>
+                                <button onclick="removeAssessment('${assessment.id}')">Remove Assessment</button>
+                                <button id='assessmentStatus' onclick="completeAssessment('${assessment.id}')">Mark as Done/Unfinished</button>
+                            </div>
+                        </div>`;
+                //check the assessment type to make sure it gets placed in the right category
+                switch (assessment.type) {
+                    case "Assignment":
+                        document.getElementById("assignment-section").innerHTML += assessmentBox;
+                        break;
+                    case "Exam":
+                        document.getElementById("exam-section").innerHTML += assessmentBox;
+                        break;
+                    case "Quiz":
+                        document.getElementById("quiz-section").innerHTML += assessmentBox;
+                        break;
+                    case "Lab":
+                        document.getElementById("lab-section").innerHTML += assessmentBox;
+                        break;
+                }
+            });
+        });
 }
-//function creates assessments from the form in addAssessments.html and places it in globalAssessments and the assessmentList of the course it was created in
+//function creates assessments from the form in addAssessments.html and places it in the DB
 function addAssessment(type, name, dueDate, description){
     event.preventDefault();
-    //create assessment object
-    let assessment ={
-        id : Date.now().toString(),
-        type: type,
-        name: name,
-        dueDate : dueDate,
-        description : description,
-        grade : 0,
-        completed :false
-    };
-
-    //add to globalAssessments
-    globalAsssessments.push(assessment);
-    localStorage.setItem("assessments", JSON.stringify(globalAsssessments));
-
-    //add to assessment list of the course
-    const urlParams = new URLSearchParams(window.location.search);
-    const courseId = urlParams.get("id");
-    availableCourses.forEach(course=>{
-        if(course.id === courseId){
-            course.assessments.push(assessment);
-        }
+    const courseId = new URLSearchParams(window.location.search).get("id");
+    fetch(`/courses/${courseId}/assessments/add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: type, name: name, dueDate: dueDate, description: description })
     })
-    localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
-    window.location.href = `adminCourse.html?id=${courseId}`
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            window.location.href = `adminCourse.html?id=${courseId}`;
+        }
+    });
 }
 
 //unenrolls student from all courses and deletes all their assessments
 function dropAllCourses(){
-    enrolledCourses = [];
-    globalAsssessments = [];
-
-    localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
-    localStorage.setItem("assessments", JSON.stringify(globalAsssessments));
-
-    window.location.reload();
+    fetch('/courses/drop-all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            window.location.reload();
+        }
+    });
 }
 
-//deletes all assessments in the course and removes them from global assessments
+//deletes all assessments in the course
 function resetAssessments(){
     const courseId = new URLSearchParams(window.location.search).get("id");
-    availableCourses.forEach(course => {
-        if(course.id === courseId) {
-            course.assessments.forEach(assessment => {
-                //remove assessment from globalAssessments
-                globalAsssessments.splice(globalAsssessments.indexOf(assessment), 1);
-            })
-            localStorage.setItem("assessments", JSON.stringify(globalAsssessments));
-            //empty the assessments array
-            course.assessments = [];
-        }
+    fetch(`/courses/${courseId}/assessments/reset`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
     })
-    localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
-    window.location.reload();
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            window.location.reload();
+        }
+    });
 }
-// deletes a specific assessment from the global array and the inside the course
+// deletes a specific assessment
 function removeAssessment(assessmentId){
-    const courseId = new URLSearchParams(window.location.search).get("id");
-    //remove from the course itself
-    availableCourses.forEach(course => {
-        if(course.id === courseId){
-            course.assessments = course.assessments.filter(assessment => assessment.id !== assessmentId);
-        }
+    fetch('/assessments/remove', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assessmentId: assessmentId })
     })
-    //remove from global array
-    globalAsssessments = globalAsssessments.filter(assessment =>assessment.id !== assessmentId);
-    localStorage.setItem("assessments", JSON.stringify(globalAsssessments));
-    localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
-    window.location.reload();
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            window.location.reload();
+        }
+    });
 }
 
 //marks assessment as complete or pending depending on its current state
 function completeAssessment(assessmentId){
-    const courseId = new URLSearchParams(window.location.search).get("id");
-    availableCourses.forEach(course => {
-        if(course.id === courseId) {
-            course.assessments.forEach(assmnt => {
-                if(assmnt.id === assessmentId){
-                    assmnt.completed = !assmnt.completed; // set boolean to opposite
-                }
-            })
-        }
+    const body = { assessmentId: assessmentId };
+    if (selectedStudentId) body.studentId = selectedStudentId;
+    fetch('/assessments/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
     })
-    globalAsssessments.forEach(assessment => {
-        if(assessment.id === assessmentId) {
-            assessment.completed = !assessment.completed; // set boolean to opposite
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            if (selectedStudentId) {
+                loadStudentAssessments();
+            } else {
+                window.location.reload();
+            }
         }
-    })
-    localStorage.setItem("assessments", JSON.stringify(globalAsssessments));
-    localStorage.setItem("availableCourses", JSON.stringify(availableCourses));
-    window.location.reload();
+    });
 }
 
 //displays the information of the current course
@@ -437,29 +452,31 @@ function displayCourseInfo(){
 //calculates the average grade of the course
 function avgGrade(){
     const courseId = new URLSearchParams(window.location.search).get("id");
-    const weights = getCourseWeights(courseId);
-
-    availableCourses.forEach((course) => {
-        if (course.id === courseId) {
-            if (course.assessments.length === 0) {
-                document.getElementById('average').innerHTML = ""; // display nothing if course has no assessments
-                return;
-            }
-
-            let weightedSum = 0;
-            let totalUsedWeight = 0;
-
-            //calculate each weighted average based on assessment weight
-            ASSESSMENT_TYPES.forEach(type => {
-                const items = course.assessments.filter(a => a.type === type); //get all assessment of current type
-                if (items.length === 0) return;
-                const avg = items.reduce((sum, a) => sum + a.grade, 0) / items.length; // avg of all assessments of current type
-                weightedSum += avg * (weights[type] / 100);
-                totalUsedWeight += weights[type];
-            });
-            const finalAvg = totalUsedWeight > 0? Math.round((weightedSum / totalUsedWeight) * 100) : 0; //return weighted average
-            document.getElementById('average').innerHTML = finalAvg;
+    const assessmentsUrl = selectedStudentId
+        ? `/courses/${courseId}/assessments?studentId=${selectedStudentId}`
+        : `/courses/${courseId}/assessments`;
+    Promise.all([
+        fetch(`/courses/${courseId}/weights`).then(res => res.json()),
+        fetch(assessmentsUrl).then(res => res.json())
+    ]).then(([weights, assessments]) => {
+        if (assessments.length === 0) {
+            document.getElementById('average').innerHTML = ""; // display nothing if course has no assessments
+            return;
         }
+
+        let weightedSum = 0;
+        let totalUsedWeight = 0;
+
+        //calculate each weighted average based on assessment weight
+        ASSESSMENT_TYPES.forEach(type => {
+            const items = assessments.filter(a => a.type === type); //get all assessment of current type
+            if (items.length === 0) return;
+            const avg = items.reduce((sum, a) => sum + a.grade, 0) / items.length; // avg of all assessments of current type
+            weightedSum += avg * (weights[type] / 100);
+            totalUsedWeight += weights[type];
+        });
+        const finalAvg = totalUsedWeight > 0? Math.round((weightedSum / totalUsedWeight) * 100) : 0; //return weighted average
+        document.getElementById('average').innerHTML = finalAvg;
     });
 }
 
@@ -467,27 +484,29 @@ function avgGrade(){
 function updateGraph(){
     const graphContainer = document.getElementById("assessment-graph");
     const courseId = new URLSearchParams(window.location.search).get("id");
-    availableCourses.forEach(course => {
-        if(course.id === courseId) {
+    const assessmentsUrl = selectedStudentId
+        ? `/courses/${courseId}/assessments?studentId=${selectedStudentId}`
+        : `/courses/${courseId}/assessments`;
+    graphContainer.innerHTML = "";
+    fetch(assessmentsUrl)
+        .then(res => res.json())
+        .then(assessments => {
             ASSESSMENT_TYPES.forEach(assessmentType => {
-                const grades = course.assessments.filter(assessment => assessment.type === assessmentType).map(assessment => assessment.grade); //gets grade values from array
+                const grades = assessments.filter(a => a.type === assessmentType).map(a => a.grade); //gets grade values from array
                 const avg = grades.length > 0? grades.reduce((sum, grade) => sum + grade)/grades.length : 0; // get avg if array is not empty
 
                 //bar graph element based on grade
                 const bar = `
                     <div style="display:flex;flex-direction:column;align-items: center;justify-content:flex-end;height: 100%">
-                        <div class="bar" style="height: ${avg}%"> <!-- height based on grade-->
+                        <div class="bar" style="height: ${avg}%">
                             ${avg > 0? `${Math.round(avg)}%` : ""}
                         </div>
                         <span>${assessmentType}</span>
                     </div>
                 `;
                 graphContainer.innerHTML += bar;
-            })
-        }
-    })
-
-
+            });
+        });
 }
 
 //event listener so that only the right elements get loaded if the id is found in the page
@@ -538,141 +557,55 @@ function renderProgressSummary(){
         return;
     }
 
-    totalCoursesElement.innerHTML = enrolledCourses.length;
+    fetch('/progress-summary')
+        .then(res => res.json())
+        .then(data => {
+            gpaElement.innerHTML = data.estimatedGpa.toFixed(2);
+            totalCoursesElement.innerHTML = data.totalCourses;
+            completedElement.innerHTML = data.completedAssessments;
+            pendingElement.innerHTML = data.pendingAssessments;
 
-    let completedCount = 0;
-    let pendingCount = 0;
-
-    globalAsssessments.forEach(assessment => {
-        if(assessment.completed){
-            completedCount++;
-        } else {
-            pendingCount++;
-        }
-    });
-
-    completedElement.innerHTML = completedCount;
-    pendingElement.innerHTML = pendingCount;
-
-    let totalAverage = 0;
-    let coursesWithGrades = 0;
-
-    progressSection.innerHTML = "";
-
-    if(enrolledCourses.length === 0){
-        progressSection.innerHTML = `<div class="empty-message"><p>No enrolled courses to display yet.</p></div>`;
-    } else {
-        enrolledCourses.forEach(course => {
-            let average = 0;
-            let completedInCourse = 0;
-            let totalInCourse = 0;
-
-            if(course.assessments && course.assessments.length > 0){
-                let gradeSum = 0;
-                let gradedCount = 0;
-
-                course.assessments.forEach(assessment => {
-                    totalInCourse++;
-
-                    if(assessment.completed){
-                        completedInCourse++;
-                    }
-
-                    if(!isNaN(assessment.grade)){
-                        gradeSum += Number(assessment.grade);
-                        gradedCount++;
-                    }
+            progressSection.innerHTML = "";
+            if (data.courseProgress.length === 0) {
+                progressSection.innerHTML = `<div class="empty-message"><p>No enrolled courses to display yet.</p></div>`;
+            } else {
+                data.courseProgress.forEach(course => {
+                    const progressCard = `
+                        <div class="progress-card">
+                            <h2>${course.code} - ${course.name}</h2>
+                            <div class="progress-details">
+                                <p><strong>Current Average:</strong> <span>${course.average}%</span></p>
+                                <p><strong>Completed:</strong> <span>${course.completedCount}/${course.totalCount}</span></p>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${course.progressPercent}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                    progressSection.innerHTML += progressCard;
                 });
-
-                if(gradedCount > 0){
-                    average = Math.round(gradeSum / gradedCount);
-                    totalAverage += average;
-                    coursesWithGrades++;
-                }
             }
 
-            let progressPercent = 0;
-            if(totalInCourse > 0){
-                progressPercent = Math.round((completedInCourse / totalInCourse) * 100);
+            upcomingSection.innerHTML = "";
+            if (data.upcomingAssessments.length === 0) {
+                upcomingSection.innerHTML = `<div class="empty-message"><p>No upcoming assessments right now.</p></div>`;
+            } else {
+                data.upcomingAssessments.forEach(assessment => {
+                    const upcomingBox = `
+                        <div class="handout">
+                            <div>
+                                <h3>${assessment.name}</h3>
+                                <p><strong>Due Date:</strong> ${assessment.dueDate}</p>
+                                <p>${assessment.description}</p>
+                                <p>Pending...</p>
+                            </div>
+                            <div>
+                                <h3><span>${assessment.grade}</span> / 100</h3>
+                            </div>
+                        </div>
+                    `;
+                    upcomingSection.innerHTML += upcomingBox;
+                });
             }
-
-            const progressCard = `
-                <div class="progress-card">
-                    <h2>${course.code} - ${course.name}</h2>
-                    <div class="progress-details">
-                        <p><strong>Current Average:</strong> <span>${average}%</span></p>
-                        <p><strong>Completed:</strong> <span>${completedInCourse}/${totalInCourse}</span></p>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${progressPercent}%;"></div>
-                    </div>
-                </div>
-            `;
-
-            progressSection.innerHTML += progressCard;
         });
-    }
-
-    let estimatedGpa = 0;
-
-    if(coursesWithGrades > 0){
-        const overallAverage = totalAverage / coursesWithGrades;
-
-        if(overallAverage >= 90){
-            estimatedGpa = 4.3;
-        } else if(overallAverage >= 85){
-            estimatedGpa = 4.0;
-        } else if(overallAverage >= 80){
-            estimatedGpa = 3.7;
-        } else if(overallAverage >= 77){
-            estimatedGpa = 3.3;
-        } else if(overallAverage >= 73){
-            estimatedGpa = 3.0;
-        } else if(overallAverage >= 70){
-            estimatedGpa = 2.7;
-        } else if(overallAverage >= 67){
-            estimatedGpa = 2.3;
-        } else if(overallAverage >= 63){
-            estimatedGpa = 2.0;
-        } else if(overallAverage >= 60){
-            estimatedGpa = 1.7;
-        } else if(overallAverage >= 57){
-            estimatedGpa = 1.3;
-        } else if(overallAverage >= 53){
-            estimatedGpa = 1.0;
-        } else if(overallAverage >= 50){
-            estimatedGpa = 0.7;
-        } else {
-            estimatedGpa = 0.0;
-        }
-    }
-
-    gpaElement.innerHTML = estimatedGpa.toFixed(2);
-
-    let sortedAssessments = [...globalAsssessments].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
-
-    upcomingSection.innerHTML = "";
-
-    const pendingAssessments = sortedAssessments.filter(assessment => !assessment.completed);
-
-    if(pendingAssessments.length === 0){
-        upcomingSection.innerHTML = `<div class="empty-message"><p>No upcoming assessments right now.</p></div>`;
-    } else {
-        pendingAssessments.slice(0, 5).forEach(assessment => {
-            const upcomingBox = `
-                <div class="handout">
-                    <div>
-                        <h3>${assessment.name}</h3>
-                        <p><strong>Due Date:</strong> ${assessment.dueDate}</p>
-                        <p>${assessment.description}</p>
-                        <p>Pending...</p>
-                    </div>
-                    <div>
-                        <h3><span>${assessment.grade}</span> / 100</h3>
-                    </div>
-                </div>
-            `;
-            upcomingSection.innerHTML += upcomingBox;
-        });
-    }
 }
