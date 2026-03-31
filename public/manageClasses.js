@@ -254,6 +254,7 @@ function displayAssessmentsAdmin(){
         .then(res => res.json())
         .then(students => {
             select.innerHTML = '<option value="">-- Select a student --</option>';
+            select.innerHTML += `<option value="">All Students</option>`;
             students.forEach(s => {
                 select.innerHTML += `<option value="${s.id}">${s.firstName} ${s.lastName}</option>`;
             });
@@ -263,6 +264,9 @@ function displayAssessmentsAdmin(){
                     loadStudentAssessments();
                     avgGrade();
                     updateGraph();
+                }
+                else{
+                    loadAssessments();
                 }
             };
         });
@@ -297,6 +301,47 @@ function loadStudentAssessments(){
                                 <button id='assessmentStatus' onclick="completeAssessment('${assessment.id}')">Mark as Done/Unfinished</button>
                             </div>
                         </div>`;
+                switch (assessment.type) {
+                    case "Assignment": document.getElementById("assignment-section").innerHTML += assessmentBox; break;
+                    case "Exam": document.getElementById("exam-section").innerHTML += assessmentBox; break;
+                    case "Quiz": document.getElementById("quiz-section").innerHTML += assessmentBox; break;
+                    case "Lab": document.getElementById("lab-section").innerHTML += assessmentBox; break;
+                }
+            });
+        });
+}
+function loadAssessments(){
+    const courseId = new URLSearchParams(window.location.search).get("id");
+    ["assignment-section","exam-section","quiz-section","lab-section"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = "";
+    });
+    fetch(`/courses/${courseId}/allAssessments`)
+        .then(res => res.json())
+        .then(assessments => {
+            assessments.forEach(assessment => {
+                const assessmentBox = `
+                        <div class="handout">
+                            <div>
+                                <h3>${assessment.name}</h3>
+                                <p>Date: ${assessment.dueDate}</p>
+                                <p>${assessment.description}</p>
+                                    <div style="display: flex;flex-direction: column;gap: 20px">
+                                    <button onclick="removeAssessment('${assessment.id}')">Remove Assessment</button>
+                                </div>
+                            </div>
+                            
+                            <div style="width: 50%;display: flex;flex-direction: column;gap: 20px; align-items: flex-end;justify-content: space-between;">
+                                <div class="progress-details">
+                                    <p><strong>Average grade: </strong><span>${assessment.grade}%</span></p>
+                                    <p><strong>Student who compeleted this: </strong><span>${assessment.completedCount}</span></p>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${assessment.completedPercent}%;"></div>
+                                </div>
+                            </div>
+                        </div>`;
+                        
                 switch (assessment.type) {
                     case "Assignment": document.getElementById("assignment-section").innerHTML += assessmentBox; break;
                     case "Exam": document.getElementById("exam-section").innerHTML += assessmentBox; break;
