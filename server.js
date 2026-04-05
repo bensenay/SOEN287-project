@@ -289,41 +289,41 @@ app.get("/courses/:id/students", (request, response) => {
     });
 });
 
-    app.get("/courses/:id/assessments", (request, response) => {
-        const studentId = request.query.studentId || request.session.userId || null;
-        const sql = `
-            SELECT assessments.id, assessments.course_id, assessments.type, assessments.name,
-                assessments.due_date, assessments.description, assessments.due_date AS dueDate,
-                COALESCE(sg.grade, 0) AS grade, COALESCE(sg.completed, 0) AS completed
-            FROM assessments
-            LEFT JOIN student_grades sg ON sg.assessment_id = assessments.id AND sg.student_id = ?
-            WHERE assessments.course_id = ?
-        `;
-        db.query(sql, [studentId, request.params.id], (err, results) => {
-            if (err)
-                return response.status(500).json({error: "Database error"});
-            response.json(results);
-        });
+app.get("/courses/:id/assessments", (request, response) => {
+    const studentId = request.query.studentId || request.session.userId || null;
+    const sql = `
+        SELECT assessments.id, assessments.course_id, assessments.type, assessments.name,
+            assessments.due_date, assessments.description, assessments.due_date AS dueDate,
+            COALESCE(sg.grade, 0) AS grade, COALESCE(sg.completed, 0) AS completed
+        FROM assessments
+        LEFT JOIN student_grades sg ON sg.assessment_id = assessments.id AND sg.student_id = ?
+        WHERE assessments.course_id = ?
+    `;
+    db.query(sql, [studentId, request.params.id], (err, results) => {
+        if (err)
+            return response.status(500).json({error: "Database error"});
+        response.json(results);
     });
-    app.get("/courses/:id/allAssessments", (request, response) => {
-        const sql = `
-            SELECT assessments.id, assessments.course_id, assessments.type, assessments.name,
-                assessments.due_date, assessments.description, assessments.due_date AS dueDate,
-            ROUND(AVG(COALESCE(sg.grade, 0))) AS grade,
-            SUM(COALESCE(sg.completed, 0)) AS completedCount,
-            ROUND(AVG(COALESCE(sg.completed, 0)) * 100) AS completedPercent
-            FROM assessments
-            LEFT JOIN student_grades sg ON sg.assessment_id = assessments.id
-            WHERE assessments.course_id = ?
-            GROUP BY assessments.id, assessments.course_id, assessments.type, assessments.name,
-                assessments.due_date, assessments.description
-        `;
-        db.query(sql, [request.params.id], (err, results) => {
-            if (err)
-                return response.status(500).json({error: "Database error : " + err.message});
-            response.json(results);
-        });
+});
+app.get("/courses/:id/allAssessments", (request, response) => {
+    const sql = `
+        SELECT assessments.id, assessments.course_id, assessments.type, assessments.name,
+            assessments.due_date, assessments.description, assessments.due_date AS dueDate,
+        ROUND(AVG(COALESCE(sg.grade, 0))) AS grade,
+        SUM(COALESCE(sg.completed, 0)) AS completedCount,
+        ROUND((SUM(COALESCE(sg.completed, 0)) / (SELECT COUNT(*) FROM student_courses WHERE course_id = assessments.course_id)) * 100) AS completedPercent
+        FROM assessments
+        LEFT JOIN student_grades sg ON sg.assessment_id = assessments.id
+        WHERE assessments.course_id = ?
+        GROUP BY assessments.id, assessments.course_id, assessments.type, assessments.name,
+            assessments.due_date, assessments.description
+    `;
+    db.query(sql, [request.params.id], (err, results) => {
+        if (err)
+            return response.status(500).json({error: "Database error : " + err.message});
+        response.json(results);
     });
+});
 
 app.post("/courses/:id/assessments/add", (request, response) => {
     const { type, name, dueDate, description } = request.body;

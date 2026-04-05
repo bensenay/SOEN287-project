@@ -320,6 +320,7 @@ function loadAssessments(){
     fetch(`/courses/${courseId}/allAssessments`)
         .then(res => res.json())
         .then(assessments => {
+            console.log(assessments);
             assessments.forEach(assessment => {
                 const assessmentBox = `
                         <div class="handout">
@@ -476,8 +477,10 @@ function completeAssessment(assessmentId){
             if (selectedStudentId) {
                 loadStudentAssessments();
             } else {
-                window.location.reload();
+                loadAssessments();
             }
+            avgGrade();
+            updateGraph();
         }
     });
 }
@@ -489,7 +492,7 @@ function displayCourseInfo(){
     fetch(`/courses/${courseId}`)
         .then(res => res.json())
         .then(course => {
-            document.getElementById("classHeader").innerHTML = course.name;
+            document.getElementById("course-header").innerHTML = course.name;
             document.getElementById("course-code").innerHTML = course.code;
             document.getElementById("term").innerHTML = course.term;
         });
@@ -563,7 +566,7 @@ window.addEventListener("load",()=>{
     if (document.getElementById("course-grid")) {
         displayCoursesInCourseGrid();
     }
-    if (document.getElementById("classHeader")) {
+    if (document.getElementById("course-header")) {
         displayCourseInfo();
     }
     if(document.getElementById("assessment-grid")){

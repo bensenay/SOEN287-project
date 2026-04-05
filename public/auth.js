@@ -55,5 +55,8 @@ async function displayStudentInfo() {
     document.getElementById('student-id').innerHTML = user.studentId;
 }
 
-window.addEventListener('load', displayStudentInfo); // call displayStudentInfo when profile page loads for dynamic content
+window.addEventListener('load', ()=>{
+    if(document.getElementById("personal-info"))
+        displayStudentInfo();
+}); // call displayStudentInfo when profile page loads for dynamic content
 

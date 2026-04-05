@@ -64,4 +64,4 @@ CREATE TABLE student_grades (
     UNIQUE KEY unique_student_assessment (student_id, assessment_id),
     FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (assessment_id) REFERENCES assessments(id) ON DELETE CASCADE
-);
+);  
