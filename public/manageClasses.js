@@ -262,12 +262,13 @@ function displayAssessmentsAdmin(){
                 selectedStudentId = this.value;
                 if (selectedStudentId) {
                     loadStudentAssessments();
-                    avgGrade();
-                    updateGraph();
+                    
                 }
                 else{
                     loadAssessments();
                 }
+                avgGrade();
+                updateGraph();
             };
         });
 }
@@ -499,7 +500,7 @@ function avgGrade(){
     const courseId = new URLSearchParams(window.location.search).get("id");
     const assessmentsUrl = selectedStudentId
         ? `/courses/${courseId}/assessments?studentId=${selectedStudentId}`
-        : `/courses/${courseId}/assessments`;
+        : `/courses/${courseId}/allAssessments`;
     Promise.all([
         fetch(`/courses/${courseId}/weights`).then(res => res.json()),
         fetch(assessmentsUrl).then(res => res.json())
